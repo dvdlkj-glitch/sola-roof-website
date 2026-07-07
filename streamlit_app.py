@@ -132,7 +132,7 @@ show["Low"] = show["Low"].map(rm)
 show["High"] = show["High"].map(rm)
 total_row = pd.DataFrame([{"Item": "TOTAL ESTIMATE", "Basis": f"{area} sqm roof" + (f" + {kwp} kWp solar" if kwp else ""),
                            "Low": rm(total_low), "High": rm(total_high)}])
-st.dataframe(pd.concat([show, total_row], ignore_index=True), use_container_width=True, hide_index=True)
+st.dataframe(pd.concat([show, total_row], ignore_index=True), width="stretch", hide_index=True)
 
 # ---------------- Cost split ----------------
 c_left, c_right = st.columns([1, 1])
@@ -166,7 +166,7 @@ cat_df = pd.DataFrame([
 ])
 cats = st.multiselect("Filter category", sorted(cat_df["Category"].unique()))
 st.dataframe(cat_df[cat_df["Category"].isin(cats)] if cats else cat_df,
-             use_container_width=True, hide_index=True)
+             width="stretch", hide_index=True)
 
 # ---------------- Lead / WhatsApp ----------------
 st.subheader("Send your estimate to WhatsApp")
