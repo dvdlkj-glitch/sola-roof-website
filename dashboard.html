@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOLA ROOF — Material Breakdown &amp; Cost Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --concrete: #d4cfc8;
+  --concrete-dim: #9e9890;
+  --charcoal: #1a1816;
+  --ink: #0e0d0c;
+  --warm-white: #f4f0ea;
+  --warm-white-dim: #c8c0b4;
+  --accent: #f5a13d;
+  --accent-glow: rgba(245, 161, 61, 0.35);
+  --accent-soft: rgba(245, 161, 61, 0.08);
+  --sky-blue: #4a8fd4;
+  --gold-warm: #c89848;
+  --green-ok: #7fbf7f;
+  --heading: 'Playfair Display', 'Georgia', serif;
+  --body: 'DM Sans', -apple-system, sans-serif;
+  --glass: rgba(244, 240, 234, 0.03);
+  --glass-border: rgba(244, 240, 234, 0.07);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--ink); color: var(--warm-white); font-family: var(--body); }
+.film-grain {
+  position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+header {
+  padding: 30px 5% 26px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky; top: 0; background: rgba(14,13,12,0.88);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); z-index: 60;
+}
+header .brand { font-family: var(--heading); font-weight: 300; font-size: 19px; letter-spacing: 0.35em; }
+header .brand span { color: var(--accent); }
+header nav a {
+  color: var(--warm-white-dim); text-decoration: none; font-size: 10px;
+  letter-spacing: 0.25em; text-transform: uppercase; margin-left: 26px;
+  transition: color .3s;
+}
+header nav a:hover { color: var(--accent); }
+
+.wrap { max-width: 1280px; margin: 0 auto; padding: 44px 5% 80px; }
+.page-head { margin-bottom: 38px; }
+.overline {
+  font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px; font-weight: 500;
+}
+.page-head h1 { font-family: var(--heading); font-weight: 300; font-size: clamp(30px, 4vw, 46px); }
+.page-head h1 em { font-style: italic; color: var(--accent); }
+.page-head p { margin-top: 12px; font-size: 13.5px; font-weight: 300; color: var(--warm-white-dim); max-width: 620px; line-height: 1.7; }
+
+/* KPI row */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 34px; }
+.kpi {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px;
+  padding: 18px 20px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.kpi .num { font-family: var(--heading); font-size: 26px; font-weight: 400; }
+.kpi .num span { font-size: 13px; color: var(--concrete-dim); }
+.kpi .lab { margin-top: 5px; font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--concrete-dim); }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+.panel {
+  background: var(--charcoal); border: 1px solid var(--glass-border); border-radius: 16px;
+  padding: 24px; position: sticky; top: 96px;
+}
+.panel h2, .card h2 {
+  font-family: var(--heading); font-weight: 400; font-size: 19px; margin-bottom: 16px;
+}
+.panel h2 em, .card h2 em { font-style: italic; color: var(--accent); }
+label {
+  display: block; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--concrete-dim); margin: 16px 0 7px; font-weight: 500;
+}
+select, input[type=number], input[type=text], textarea {
+  width: 100%; background: rgba(244,240,234,0.04); border: 1px solid var(--glass-border);
+  border-radius: 10px; padding: 11px 12px; color: var(--warm-white);
+  font-family: var(--body); font-size: 13px; outline: none;
+  transition: border-color .3s;
+}
+select:focus, input:focus, textarea:focus { border-color: var(--accent); }
+select option { background: var(--charcoal); }
+.check-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 13px; font-weight: 300; color: var(--warm-white-dim); }
+.check-row input { width: auto; accent-color: var(--accent); }
+.hint { font-size: 10.5px; color: var(--concrete-dim); margin-top: 6px; line-height: 1.5; }
+
+.btn {
+  display: inline-block; width: 100%; text-align: center; padding: 14px 20px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  border: 0; cursor: pointer; text-decoration: none; margin-top: 18px;
+  transition: transform .3s, box-shadow .3s;
+  font-family: var(--body);
+}
+.btn-primary { background: var(--accent); color: #1a1204; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
+.btn-ghost { background: transparent; border: 1px solid rgba(244,240,234,0.25); color: var(--warm-white); margin-top: 10px; }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Cards */
+.card {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px;
+  padding: 24px; margin-bottom: 20px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.estimate-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.estimate-box { padding: 18px 20px; border-radius: 12px; background: rgba(245,161,61,0.06); border: 1px solid rgba(245,161,61,0.18); }
+.estimate-box.alt { background: rgba(74,143,212,0.06); border-color: rgba(74,143,212,0.18); }
+.estimate-box .e-lab { font-size: 8.5px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--concrete-dim); }
+.estimate-box .e-val { font-family: var(--heading); font-size: clamp(22px, 2.6vw, 32px); margin-top: 8px; color: var(--accent); }
+.estimate-box.alt .e-val { color: var(--sky-blue); }
+.estimate-box .e-sub { font-size: 11px; color: var(--warm-white-dim); margin-top: 6px; }
+
+/* Breakdown table */
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; font-size: 8.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--concrete-dim); font-weight: 500; padding: 10px 10px; border-bottom: 1px solid var(--glass-border);
+}
+th.r, td.r { text-align: right; }
+td { padding: 12px 10px; font-size: 13px; font-weight: 300; border-bottom: 1px solid rgba(244,240,234,0.05); vertical-align: top; }
+td .item-name { font-weight: 500; color: var(--warm-white); }
+td .item-sub { font-size: 11px; color: var(--concrete-dim); margin-top: 3px; line-height: 1.5; }
+td.qty { white-space: nowrap; color: var(--warm-white-dim); }
+td.r { white-space: nowrap; color: var(--warm-white); font-weight: 400; }
+tr.total-row td { border-bottom: none; border-top: 1px solid rgba(245,161,61,0.35); padding-top: 16px; }
+tr.total-row .item-name { font-family: var(--heading); font-size: 16px; }
+tr.total-row td.r { font-family: var(--heading); font-size: 17px; color: var(--accent); }
+.table-scroll { overflow-x: auto; }
+
+/* Cost split bars */
+.split-row { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+.split-row .s-lab { flex: 0 0 170px; font-size: 11.5px; color: var(--warm-white-dim); }
+.split-row .s-track { flex: 1; height: 8px; border-radius: 4px; background: rgba(244,240,234,0.06); overflow: hidden; }
+.split-row .s-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--gold-warm)); transition: width .8s ease; }
+.split-row.blue .s-fill { background: linear-gradient(90deg, var(--sky-blue), #6aa8e0); }
+.split-row .s-val { flex: 0 0 52px; text-align: right; font-size: 11.5px; color: var(--warm-white); }
+
+/* Solar payback */
+.payback-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.pb-cell { padding: 14px 16px; border-radius: 12px; background: rgba(244,240,234,0.03); border: 1px solid var(--glass-border); }
+.pb-cell .num { font-family: var(--heading); font-size: 21px; color: var(--sky-blue); }
+.pb-cell .lab { font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--concrete-dim); margin-top: 5px; line-height: 1.6; }
+
+/* Catalog */
+.catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.product {
+  background: rgba(244,240,234,0.03); border: 1px solid var(--glass-border); border-radius: 12px;
+  padding: 18px; transition: border-color .3s, background .3s;
+}
+.product:hover { border-color: rgba(245,161,61,0.3); background: rgba(244,240,234,0.05); }
+.product .cat { font-size: 8.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); }
+.product h3 { font-family: var(--heading); font-weight: 400; font-size: 16px; margin: 7px 0 6px; }
+.product p { font-size: 11.5px; font-weight: 300; color: var(--concrete-dim); line-height: 1.6; }
+.product .scores { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.product .score {
+  font-size: 9.5px; padding: 4px 9px; border-radius: 999px;
+  background: rgba(74,143,212,0.1); border: 1px solid rgba(74,143,212,0.2); color: #9cc4e8;
+}
+.product .price {
+  margin-top: 12px; font-size: 12.5px; color: var(--gold-warm); font-weight: 500;
+  padding-top: 10px; border-top: 1px dotted rgba(244,240,234,0.12);
+}
+
+/* WhatsApp output */
+#wa-summary {
+  width: 100%; min-height: 190px; margin-top: 12px; resize: vertical;
+  font-size: 12px; line-height: 1.65; font-family: 'Consolas', monospace;
+}
+.disclaimer { margin-top: 26px; font-size: 10.5px; color: var(--concrete-dim); line-height: 1.7; }
+
+footer { border-top: 1px solid var(--glass-border); padding: 36px 5%; text-align: center; }
+footer .f-brand { font-family: var(--heading); font-weight: 300; letter-spacing: 0.35em; font-size: 15px; margin-bottom: 10px; }
+footer .f-legal { font-size: 10px; color: var(--concrete-dim); }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .panel { position: static; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .catalog-grid, .estimate-hero, .payback-grid { grid-template-columns: 1fr; }
+  .split-row .s-lab { flex-basis: 120px; }
+}
+</style>
+</head>
+<body>
+<div class="film-grain"></div>
+
+<header>
+  <div class="brand">SOLA <span>ROOF</span></div>
+  <nav>
+    <a href="index.html">← Showcase</a>
+    <a href="#catalog">Catalog</a>
+    <a href="#lead">Enquire</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="overline">Material Breakdown · Cost Estimation</div>
+    <h1>Plan your roof, <em>line by line</em></h1>
+    <p>Select your building type, roof area and system options — the estimator produces an itemised material breakdown with low/high budget ranges based on our sample catalog rates.</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="num" id="kpi-total">—</div><div class="lab">Estimated Budget (Mid)</div></div>
+    <div class="kpi"><div class="num" id="kpi-area">120<span> sqm</span></div><div class="lab">Roof Area</div></div>
+    <div class="kpi"><div class="num" id="kpi-rate">—</div><div class="lab">Blended Rate / sqm</div></div>
+    <div class="kpi"><div class="num" id="kpi-solar">—</div><div class="lab">Solar Payback (Est.)</div></div>
+  </div>
+
+  <div class="layout">
+    <!-- ============ CONFIG PANEL ============ -->
+    <aside class="panel">
+      <h2>Configure your <em>estimate</em></h2>
+
+      <label>Building Type</label>
+      <select id="building">
+        <option value="terrace">Terrace House</option>
+        <option value="bungalow" selected>Bungalow / Semi-D</option>
+        <option value="shoplot">Shoplot / Commercial</option>
+        <option value="factory">Factory / Warehouse</option>
+        <option value="container">Container Café / Modular</option>
+        <option value="resort">Resort / Homestay</option>
+      </select>
+
+      <label>Roof Area (sqm)</label>
+      <input type="number" id="area" value="120" min="10" max="20000">
+      <div class="hint">Tip: floor area × 1.1–1.3 is a rough roof-area guide for pitched roofs.</div>
+
+      <label>Roofing System</label>
+      <select id="system">
+        <option value="MR-750">Longrun Metal Roofing 750 — RM 55–95/sqm</option>
+        <option value="CL-680">Clip Lock Roofing System — RM 85–145/sqm</option>
+        <option value="PU-50" selected>PU Insulated Metal Panel — RM 120–220/sqm</option>
+        <option value="ST-ROOF">Stone Coated Metal Tile — RM 110–200/sqm</option>
+      </select>
+
+      <label>Structure &amp; Add-Ons</label>
+      <div class="check-row"><input type="checkbox" id="opt-truss" checked> Lightweight steel roof truss</div>
+      <div class="check-row"><input type="checkbox" id="opt-insul"> Extra foil insulation layer</div>
+      <div class="check-row"><input type="checkbox" id="opt-gutter" checked> Gutter, flashing &amp; ridge</div>
+      <div class="check-row"><input type="checkbox" id="opt-wp"> Waterproofing repair package</div>
+
+      <label>Solar Package</label>
+      <select id="solar">
+        <option value="0">No solar (roof only)</option>
+        <option value="4" selected>4 kWp — typical home</option>
+        <option value="6">6 kWp — large home / café</option>
+        <option value="10">10 kWp — commercial</option>
+        <option value="20">20 kWp — factory / warehouse</option>
+      </select>
+      <div class="check-row"><input type="checkbox" id="opt-battery"> Add battery storage (10 kWh)</div>
+
+      <label>Solar Carport (sqm, 0 = none)</label>
+      <input type="number" id="carport" value="0" min="0" max="500">
+
+      <button class="btn btn-primary" onclick="calc()">Recalculate</button>
+      <a class="btn btn-ghost" href="#lead">Send to WhatsApp ↓</a>
+
+      <div class="disclaimer">Sample rates only — indicative estimate ranges for budgeting discussion, not a formal quotation. Final pricing follows site inspection.</div>
+    </aside>
+
+    <!-- ============ RESULTS ============ -->
+    <main>
+      <div class="card">
+        <h2>Budget <em>estimate</em></h2>
+        <div class="estimate-hero">
+          <div class="estimate-box">
+            <div class="e-lab">Total Project Range</div>
+            <div class="e-val" id="total-range">—</div>
+            <div class="e-sub" id="total-sub">Roof + structure + solar, incl. installation allowance</div>
+          </div>
+          <div class="estimate-box alt">
+            <div class="e-lab">Roof-Only Range (excl. solar)</div>
+            <div class="e-val" id="roof-range">—</div>
+            <div class="e-sub" id="roof-sub">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Detailed material <em>breakdown</em></h2>
+        <div class="table-scroll">
+          <table id="breakdown">
+            <thead>
+              <tr><th>Item</th><th>Qty / Basis</th><th class="r">Low (RM)</th><th class="r">High (RM)</th></tr>
+            </thead>
+            <tbody id="breakdown-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Where the money <em>goes</em></h2>
+        <div id="split-bars"></div>
+      </div>
+
+      <div class="card" id="solar-card">
+        <h2>Solar return <em>estimate</em></h2>
+        <div class="payback-grid">
+          <div class="pb-cell"><div class="num" id="pb-gen">—</div><div class="lab">Est. Generation / Month<br>(kWp × 4.5h × 30d × 80%)</div></div>
+          <div class="pb-cell"><div class="num" id="pb-save">—</div><div class="lab">Est. Bill Saving / Month<br>(@ RM 0.34 / kWh avg)</div></div>
+          <div class="pb-cell"><div class="num" id="pb-years">—</div><div class="lab">Simple Payback Period<br>(solar cost ÷ annual saving)</div></div>
+        </div>
+        <div class="disclaimer">Generation varies with orientation, shading and weather. Tariff savings depend on your SESB tariff band and net-metering arrangement.</div>
+      </div>
+
+      <!-- ============ CATALOG ============ -->
+      <div class="card" id="catalog">
+        <h2>Product <em>catalog</em></h2>
+        <div class="catalog-grid" id="catalog-grid"></div>
+      </div>
+
+      <!-- ============ LEAD ============ -->
+      <div class="card" id="lead">
+        <h2>Send your estimate to <em>WhatsApp</em></h2>
+        <label>Name</label>
+        <input type="text" id="lead-name" placeholder="Your name">
+        <label>Project Location</label>
+        <input type="text" id="lead-loc" placeholder="e.g. Penampang, Kota Kinabalu">
+        <label>Estimate Summary (auto-generated)</label>
+        <textarea id="wa-summary" readonly></textarea>
+        <a class="btn btn-primary" id="wa-btn" href="#" target="_blank" rel="noopener" style="max-width:300px;">Open in WhatsApp</a>
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="f-brand">SOLA ROOF</div>
+  <div class="f-legal">Kota Kinabalu, Sabah · Sample dashboard — all figures are indicative ranges, not a formal quotation.</div>
+</footer>
+
+<script>
+/* ================= Catalog data (from roofing_products_sample.csv) ================= */
+const PRODUCTS = {
+  'MR-750':   { name: 'Longrun Metal Roofing 750', cat: 'Metal Roofing', low: 55, high: 95, heat: '2/5', noise: '2/5', dur: 'Medium-High',
+                pitch: 'Cost-effective long-span metal roof with flexible colour and profile selection.', best: 'Terrace house, shoplot, warehouse' },
+  'CL-680':   { name: 'Clip Lock Roofing System', cat: 'Premium Metal Roofing', low: 85, high: 145, heat: '2/5', noise: '2/5', dur: 'High',
+                pitch: 'Concealed-fixing roofing system for cleaner appearance and better water resistance.', best: 'Low slope roof, commercial, modern bungalow' },
+  'PU-50':    { name: 'PU Insulated Metal Roof Panel', cat: 'Heat Insulation Upgrade', low: 120, high: 220, heat: '5/5', noise: '4/5', dur: 'High',
+                pitch: 'Metal roof with PU insulation core to reduce heat transfer and improve indoor comfort.', best: 'Factory, office, school, café, container building' },
+  'ST-ROOF':  { name: 'Stone Coated Metal Roof Tile', cat: 'Aesthetic Roof Upgrade', low: 110, high: 200, heat: '3/5', noise: '3/5', dur: 'High',
+                pitch: 'Premium roof tile appearance with metal roof weight advantage.', best: 'Bungalow, homestay, resort, premium residential' },
+  'LGS-TRUSS':{ name: 'Lightweight Steel Roof Truss', cat: 'Roof Structure', low: 65, high: 130, heat: 'N/A', noise: 'N/A', dur: 'High',
+                pitch: 'Engineered lightweight steel truss for predictable structural performance.', best: 'New build, renovation, modular, IBS project' },
+  'INS-FOIL': { name: 'Heat & Sound Insulation Layer', cat: 'Heat Insulation Upgrade', low: 18, high: 45, heat: '3/5', noise: '3/5', dur: 'Medium',
+                pitch: 'Add-on insulation layer to improve comfort without full roof system change.', best: 'Residential, shoplot, container café, site office' },
+  'WPG-01':   { name: 'Waterproofing & Gutter Package', cat: 'Roof Repair Solution', low: 1500, high: 15000, heat: 'N/A', noise: 'N/A', dur: 'Medium', perJob: true,
+                pitch: 'Roof leak repair covering sealant, flashing, gutter and drainage improvement.', best: 'Old house, shoplot, factory, school' },
+  'CAN-01':   { name: 'Canopy / Awning Roof Package', cat: 'Commercial Add-On', low: 90, high: 180, heat: '3/5', noise: '2/5', dur: 'Medium-High',
+                pitch: 'Practical add-on canopy for retail frontage and outdoor seating comfort.', best: 'Container café, shop entrance, car porch' }
+};
+
+/* Solar sample rates (RM per kWp, installed) and battery */
+const SOLAR_RATE = { low: 2800, high: 3800 };          // per kWp
+const BATTERY = { low: 12000, high: 18000 };           // 10 kWh sample
+const GUTTER_PCT = { low: 0.06, high: 0.10 };          // % of roof material
+const LABOR_PCT = { low: 0.12, high: 0.18 };           // installation allowance on roof scope
+const PEAK_SUN = 4.5, PERF = 0.8, TARIFF = 0.34;       // Sabah sample solar assumptions
+
+const rm = v => 'RM ' + Math.round(v).toLocaleString('en-MY');
+const rmK = v => v >= 1000 ? 'RM ' + (v / 1000).toFixed(v >= 100000 ? 0 : 1) + 'k' : rm(v);
+
+function calc() {
+  const area = Math.max(10, +document.getElementById('area').value || 120);
+  const sysId = document.getElementById('system').value;
+  const sys = PRODUCTS[sysId];
+  const kwp = +document.getElementById('solar').value;
+  const carport = Math.max(0, +document.getElementById('carport').value || 0);
+  const hasTruss = document.getElementById('opt-truss').checked;
+  const hasInsul = document.getElementById('opt-insul').checked;
+  const hasGutter = document.getElementById('opt-gutter').checked;
+  const hasWP = document.getElementById('opt-wp').checked;
+  const hasBatt = document.getElementById('opt-battery').checked;
+
+  const rows = [];
+  const add = (name, sub, qty, low, high, group) => rows.push({ name, sub, qty, low, high, group });
+
+  // Roof scope
+  add(sys.name, sys.pitch, `${area} sqm × RM ${sys.low}–${sys.high}`, area * sys.low, area * sys.high, 'Roofing');
+  if (hasTruss) {
+    const t = PRODUCTS['LGS-TRUSS'];
+    add(t.name, 'Engineered structure, termite-resistant', `${area} sqm × RM ${t.low}–${t.high}`, area * t.low, area * t.high, 'Structure');
+  }
+  if (hasInsul) {
+    const f = PRODUCTS['INS-FOIL'];
+    add(f.name, 'Reflective foil under-layer for extra comfort', `${area} sqm × RM ${f.low}–${f.high}`, area * f.low, area * f.high, 'Insulation');
+  }
+  const roofMatLow = area * sys.low, roofMatHigh = area * sys.high;
+  if (hasGutter) {
+    add('Gutter, Flashing & Ridge Set', 'Allowance at 6–10% of roofing material value', '6–10% of roof value',
+        roofMatLow * GUTTER_PCT.low, roofMatHigh * GUTTER_PCT.high, 'Roofing');
+  }
+  if (hasWP) {
+    const w = PRODUCTS['WPG-01'];
+    add(w.name, 'Sealant, flashing repair & drainage improvement', 'per job', w.low, w.high, 'Repair');
+  }
+  if (carport > 0) {
+    const c = PRODUCTS['CAN-01'];
+    add('Solar Carport / Canopy', 'Shade structure doubling as PV surface', `${carport} sqm × RM ${c.low}–${c.high}`, carport * c.low, carport * c.high, 'Carport');
+  }
+
+  // Installation allowance on roof scope (everything so far)
+  const scopeLow = rows.reduce((s, r) => s + r.low, 0);
+  const scopeHigh = rows.reduce((s, r) => s + r.high, 0);
+  add('Installation & Workmanship', 'Labour, lifting, safety & site allowance (12–18%)', '12–18% of roof scope',
+      scopeLow * LABOR_PCT.low, scopeHigh * LABOR_PCT.high, 'Installation');
+
+  const roofOnlyLow = rows.reduce((s, r) => s + r.low, 0);
+  const roofOnlyHigh = rows.reduce((s, r) => s + r.high, 0);
+
+  // Solar scope
+  let solarLow = 0, solarHigh = 0;
+  if (kwp > 0) {
+    add(`Solar PV System — ${kwp} kWp`, 'Panels, hybrid inverter, mounting, cabling & commissioning',
+        `${kwp} kWp × RM ${SOLAR_RATE.low.toLocaleString()}–${SOLAR_RATE.high.toLocaleString()}`,
+        kwp * SOLAR_RATE.low, kwp * SOLAR_RATE.high, 'Solar');
+    solarLow += kwp * SOLAR_RATE.low; solarHigh += kwp * SOLAR_RATE.high;
+  }
+  if (hasBatt) {
+    add('Battery Storage — 10 kWh', 'Backup power + evening self-consumption', 'per unit', BATTERY.low, BATTERY.high, 'Solar');
+    solarLow += BATTERY.low; solarHigh += BATTERY.high;
+  }
+
+  const totalLow = rows.reduce((s, r) => s + r.low, 0);
+  const totalHigh = rows.reduce((s, r) => s + r.high, 0);
+
+  /* ---- Render table ---- */
+  const tb = document.getElementById('breakdown-body');
+  tb.innerHTML = rows.map(r => `
+    <tr>
+      <td><div class="item-name">${r.name}</div><div class="item-sub">${r.sub}</div></td>
+      <td class="qty">${r.qty}</td>
+      <td class="r">${rm(r.low)}</td>
+      <td class="r">${rm(r.high)}</td>
+    </tr>`).join('') + `
+    <tr class="total-row">
+      <td><div class="item-name">Total Estimate</div></td>
+      <td class="qty">${area} sqm roof${kwp ? ' + ' + kwp + ' kWp solar' : ''}</td>
+      <td class="r">${rm(totalLow)}</td>
+      <td class="r">${rm(totalHigh)}</td>
+    </tr>`;
+
+  /* ---- Hero boxes + KPIs ---- */
+  document.getElementById('total-range').textContent = rm(totalLow) + ' – ' + rm(totalHigh);
+  document.getElementById('roof-range').textContent = rm(roofOnlyLow) + ' – ' + rm(roofOnlyHigh);
+  document.getElementById('roof-sub').textContent = sys.name + ' on ' + area + ' sqm';
+  const mid = (totalLow + totalHigh) / 2;
+  document.getElementById('kpi-total').textContent = rmK(mid);
+  document.getElementById('kpi-area').innerHTML = area + '<span> sqm</span>';
+  document.getElementById('kpi-rate').innerHTML = 'RM ' + Math.round(((roofOnlyLow + roofOnlyHigh) / 2) / area) + '<span> /sqm</span>';
+
+  /* ---- Cost split bars ---- */
+  const groups = {};
+  rows.forEach(r => { groups[r.group] = (groups[r.group] || 0) + (r.low + r.high) / 2; });
+  const order = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+  const gMax = order[0][1];
+  document.getElementById('split-bars').innerHTML = order.map(([g, v]) => `
+    <div class="split-row${g === 'Solar' ? ' blue' : ''}">
+      <div class="s-lab">${g}</div>
+      <div class="s-track"><div class="s-fill" style="width:${(v / gMax * 100).toFixed(1)}%"></div></div>
+      <div class="s-val">${Math.round(v / mid * 100)}%</div>
+    </div>`).join('');
+
+  /* ---- Solar payback ---- */
+  const solarCard = document.getElementById('solar-card');
+  if (kwp > 0) {
+    solarCard.style.display = '';
+    const genMonth = kwp * PEAK_SUN * 30 * PERF;             // kWh / month
+    const saveMonth = genMonth * TARIFF;                     // RM / month
+    const solarMid = (solarLow + solarHigh) / 2;
+    const years = solarMid / (saveMonth * 12);
+    document.getElementById('pb-gen').textContent = Math.round(genMonth).toLocaleString() + ' kWh';
+    document.getElementById('pb-save').textContent = rm(saveMonth);
+    document.getElementById('pb-years').textContent = years.toFixed(1) + ' yrs';
+    document.getElementById('kpi-solar').innerHTML = years.toFixed(1) + '<span> yrs</span>';
+  } else {
+    solarCard.style.display = 'none';
+    document.getElementById('kpi-solar').textContent = '—';
+  }
+
+  /* ---- WhatsApp summary ---- */
+  const bt = document.getElementById('building');
+  const name = document.getElementById('lead-name').value.trim();
+  const loc = document.getElementById('lead-loc').value.trim();
+  const lines = [
+    'SOLA ROOF — Estimate Request',
+    name ? 'Name: ' + name : null,
+    loc ? 'Location: ' + loc : null,
+    'Building: ' + bt.options[bt.selectedIndex].text,
+    'Roof area: ' + area + ' sqm',
+    'System: ' + sys.name,
+    hasTruss ? '+ Steel truss' : null,
+    hasInsul ? '+ Foil insulation' : null,
+    hasGutter ? '+ Gutter/flashing set' : null,
+    hasWP ? '+ Waterproofing package' : null,
+    kwp ? 'Solar: ' + kwp + ' kWp' + (hasBatt ? ' + 10kWh battery' : '') : 'Solar: none',
+    carport ? 'Carport: ' + carport + ' sqm' : null,
+    '',
+    'Estimated range: ' + rm(totalLow) + ' - ' + rm(totalHigh),
+    '(Sample estimate only - please advise site visit for formal quote)'
+  ].filter(l => l !== null);
+  const msg = lines.join('\n');
+  document.getElementById('wa-summary').value = msg;
+  document.getElementById('wa-btn').href = 'https://wa.me/60123456789?text=' + encodeURIComponent(msg);
+}
+
+/* ---- Catalog cards ---- */
+document.getElementById('catalog-grid').innerHTML = Object.entries(PRODUCTS).map(([id, p]) => `
+  <div class="product">
+    <div class="cat">${p.cat}</div>
+    <h3>${p.name}</h3>
+    <p>${p.pitch}</p>
+    <p style="margin-top:6px;"><b style="color:var(--warm-white-dim);font-weight:500;">Best for:</b> ${p.best}</p>
+    <div class="scores">
+      <span class="score">Heat ${p.heat}</span>
+      <span class="score">Noise ${p.noise}</span>
+      <span class="score">Durability ${p.dur}</span>
+    </div>
+    <div class="price">${p.perJob ? `RM ${p.low.toLocaleString()} – ${p.high.toLocaleString()} / job` : `RM ${p.low} – ${p.high} / sqm`}</div>
+  </div>`).join('');
+
+/* live recalc */
+['building','area','system','solar','carport','lead-name','lead-loc'].forEach(id =>
+  document.getElementById(id).addEventListener('input', calc));
+['opt-truss','opt-insul','opt-gutter','opt-wp','opt-battery'].forEach(id =>
+  document.getElementById(id).addEventListener('change', calc));
+
+calc();
+</script>
+</body>
+</html>
