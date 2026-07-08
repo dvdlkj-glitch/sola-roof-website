@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0d0c">
+<title>SOLA ROOF — AI Roof Photo Diagnosis · Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --concrete-dim: #9e9890;
+  --charcoal: #1a1816;
+  --ink: #0e0d0c;
+  --warm-white: #f4f0ea;
+  --warm-white-dim: #c8c0b4;
+  --accent: #f5a13d;
+  --accent-glow: rgba(245, 161, 61, 0.35);
+  --sky-blue: #4a8fd4;
+  --gold-warm: #c89848;
+  --ok: #7fbf5f; --fair: #c9c94a; --warn: #f5a13d; --high: #e06a3a; --crit: #d9484a;
+  --heading: 'Playfair Display', 'Georgia', serif;
+  --body: 'DM Sans', -apple-system, sans-serif;
+  --glass: rgba(244, 240, 234, 0.03);
+  --glass-border: rgba(244, 240, 234, 0.07);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--ink); color: var(--warm-white); font-family: var(--body); }
+
+header {
+  padding: 26px 5% 22px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky; top: 0; background: rgba(14,13,12,0.9);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); z-index: 500;
+}
+header .brand { font-family: var(--heading); font-weight: 300; font-size: 19px; letter-spacing: 0.35em; }
+header .brand span { color: var(--accent); }
+header nav a {
+  color: var(--warm-white-dim); text-decoration: none; font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase; margin-left: 16px; transition: color .3s;
+}
+header nav a:hover, header nav a.active { color: var(--accent); }
+
+.wrap { max-width: 1360px; margin: 0 auto; padding: 40px 3% 70px; }
+.overline { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 500; }
+.page-head h1 { font-family: var(--heading); font-weight: 300; font-size: clamp(28px, 3.8vw, 44px); }
+.page-head h1 em { font-style: italic; color: var(--accent); }
+.page-head p { margin: 13px 0 0; font-size: 13.5px; font-weight: 300; color: var(--warm-white-dim); max-width: 700px; line-height: 1.75; }
+.demo-badge {
+  display: inline-block; margin-top: 16px; font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  padding: 7px 14px; border-radius: 999px; font-weight: 600;
+  background: rgba(74,143,212,0.12); border: 1px solid rgba(74,143,212,0.3); color: #9cc4e8;
+}
+
+/* Step strip */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 28px 0; }
+.stepc { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 16px; }
+.stepc .n { font-family: var(--heading); font-size: 18px; color: var(--accent); }
+.stepc .t { font-size: 12px; font-weight: 500; margin: 4px 0 3px; }
+.stepc .d { font-size: 10.5px; color: var(--concrete-dim); line-height: 1.5; }
+
+/* 3-panel layout */
+.panels { display: grid; grid-template-columns: 300px 1.35fr 1fr; gap: 14px; align-items: start; }
+.panel {
+  background: var(--charcoal); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px;
+}
+.panel h2 { font-family: var(--heading); font-weight: 400; font-size: 17px; margin-bottom: 4px; }
+.panel h2 em { font-style: italic; color: var(--accent); }
+.panel .p-sub { font-size: 10.5px; color: var(--concrete-dim); margin-bottom: 14px; line-height: 1.5; }
+.p-lab { font-size: 8.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--concrete-dim); margin: 15px 0 7px; font-weight: 600; }
+
+/* Left: intake */
+.samples { display: grid; gap: 8px; }
+.sample {
+  display: flex; gap: 10px; align-items: center; cursor: pointer;
+  border: 1px solid var(--glass-border); border-radius: 10px; padding: 7px;
+  background: var(--glass); transition: border-color .25s, background .25s;
+}
+.sample:hover { border-color: rgba(245,161,61,0.4); }
+.sample.active { border-color: var(--accent); background: rgba(245,161,61,0.07); }
+.sample img { width: 74px; height: 46px; object-fit: cover; border-radius: 6px; flex: 0 0 auto; }
+.sample .s-t { font-size: 11.5px; font-weight: 500; line-height: 1.3; }
+.sample .s-d { font-size: 9.5px; color: var(--concrete-dim); margin-top: 2px; }
+.dropzone {
+  border: 1px dashed rgba(244,240,234,0.2); border-radius: 10px; padding: 14px;
+  text-align: center; font-size: 10.5px; color: var(--concrete-dim); line-height: 1.6; margin-top: 8px;
+}
+select, input[type=text] {
+  width: 100%; background: rgba(244,240,234,0.04); border: 1px solid var(--glass-border);
+  border-radius: 9px; padding: 9px 11px; color: var(--warm-white);
+  font-family: var(--body); font-size: 12px; outline: none;
+}
+select option { background: var(--charcoal); }
+.btn {
+  display: block; width: 100%; text-align: center; padding: 13px 18px; border-radius: 999px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  text-decoration: none; border: 0; cursor: pointer; font-family: var(--body);
+  transition: transform .3s, box-shadow .3s;
+}
+.btn-primary { background: var(--accent); color: #1a1204; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-ghost { background: transparent; border: 1px solid rgba(244,240,234,0.25); color: var(--warm-white); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Middle: diagnosis */
+.photo-stage { position: relative; border-radius: 12px; overflow: hidden; background: #131110; aspect-ratio: 16/9; }
+.photo-stage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-stage .placeholder {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--concrete-dim); font-size: 12px; letter-spacing: 0.1em; text-align: center; padding: 20px; line-height: 1.8;
+}
+.scan-grid {
+  position: absolute; inset: 0; opacity: 0; transition: opacity .4s;
+  background-image: linear-gradient(rgba(245,161,61,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(245,161,61,0.14) 1px, transparent 1px);
+  background-size: 44px 44px; pointer-events: none;
+}
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 3px; top: -3px; opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  box-shadow: 0 0 24px var(--accent-glow); pointer-events: none;
+}
+.scanning .scan-grid { opacity: 1; }
+.scanning .scan-line { opacity: 1; animation: sweep 1.6s ease-in-out infinite; }
+@keyframes sweep { 0% { top: 0; } 50% { top: calc(100% - 3px); } 100% { top: 0; } }
+.scan-status {
+  position: absolute; left: 12px; bottom: 10px; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  background: rgba(14,13,12,0.72); padding: 6px 12px; border-radius: 999px; color: var(--accent);
+  opacity: 0; transition: opacity .3s; backdrop-filter: blur(8px);
+}
+.scanning .scan-status, .done .scan-status { opacity: 1; }
+.done .scan-status { color: #a8d878; }
+.marker {
+  position: absolute; width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--accent); background: rgba(245,161,61,0.25);
+  transform: translate(-50%, -50%) scale(0); pointer-events: none;
+}
+.marker.show { animation: pop .5s ease forwards, pulse 2s ease 0.5s infinite; }
+@keyframes pop { to { transform: translate(-50%, -50%) scale(1); } }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(245,161,61,0.5); } 50% { box-shadow: 0 0 0 12px rgba(245,161,61,0); } }
+.marker .m-lab {
+  position: absolute; left: 20px; top: 50%; transform: translateY(-50%); white-space: nowrap;
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  background: rgba(14,13,12,0.8); border: 1px solid rgba(245,161,61,0.4);
+  padding: 4px 9px; border-radius: 999px; color: var(--warm-white);
+}
+.marker.left .m-lab { left: auto; right: 20px; }
+
+.result-block { opacity: 0; transform: translateY(10px); transition: opacity .6s, transform .6s; }
+.result-block.reveal { opacity: 1; transform: none; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600;
+  padding: 6px 11px; border-radius: 999px;
+  background: rgba(224,106,58,0.13); border: 1px solid rgba(224,106,58,0.35); color: #eda98b;
+}
+.evi { list-style: none; }
+.evi li {
+  font-size: 12px; font-weight: 300; color: var(--warm-white-dim); line-height: 1.6;
+  padding: 6px 0 6px 18px; position: relative; border-bottom: 1px solid rgba(244,240,234,0.05);
+}
+.evi li::before { content: '👁'; position: absolute; left: 0; top: 6px; font-size: 10px; }
+
+.score-row { display: flex; gap: 18px; align-items: center; margin-top: 4px; }
+.gauge { position: relative; width: 130px; height: 130px; flex: 0 0 auto; }
+.gauge svg { transform: rotate(-90deg); }
+.gauge .g-val {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.gauge .g-num { font-family: var(--heading); font-size: 34px; line-height: 1; }
+.gauge .g-cap { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--concrete-dim); margin-top: 4px; }
+.risk-pill {
+  display: inline-block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  padding: 7px 14px; border-radius: 999px; margin-bottom: 8px;
+}
+.score-meta .urgency { font-size: 12px; color: var(--warm-white-dim); line-height: 1.65; }
+.conf-note { margin-top: 10px; font-size: 10px; color: var(--concrete-dim); line-height: 1.6; font-style: italic; }
+
+.factors { margin-top: 6px; }
+.factor-row { display: flex; align-items: center; gap: 10px; margin: 7px 0; }
+.factor-row .f-lab { flex: 0 0 150px; font-size: 10.5px; color: var(--warm-white-dim); }
+.factor-row .f-track { flex: 1; height: 6px; border-radius: 3px; background: rgba(244,240,234,0.07); overflow: hidden; }
+.factor-row .f-fill { height: 100%; border-radius: 3px; width: 0; transition: width 1s ease; }
+.factor-row .f-w { flex: 0 0 34px; text-align: right; font-size: 9.5px; color: var(--concrete-dim); }
+
+/* Right: solution */
+.pkg-box {
+  border: 1px solid rgba(245,161,61,0.35); background: rgba(245,161,61,0.06);
+  border-radius: 12px; padding: 16px;
+}
+.pkg-box .pk-lab { font-size: 8.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+.pkg-box h3 { font-family: var(--heading); font-weight: 400; font-size: 20px; margin: 6px 0 6px; }
+.pkg-box p { font-size: 11.5px; font-weight: 300; color: var(--warm-white-dim); line-height: 1.65; }
+.upg { margin-top: 8px; font-size: 11px; color: var(--sky-blue); }
+.mat-list, .visit-list { list-style: none; }
+.mat-list li, .visit-list li {
+  font-size: 12px; font-weight: 300; color: var(--warm-white-dim);
+  padding: 6px 0 6px 20px; position: relative; border-bottom: 1px solid rgba(244,240,234,0.05);
+}
+.mat-list li::before { content: '☑'; position: absolute; left: 0; color: var(--accent); }
+.visit-list li::before { content: '→'; position: absolute; left: 0; color: var(--sky-blue); }
+.sol-btns { display: grid; gap: 8px; margin-top: 16px; }
+
+/* Lead table */
+.section-title { font-family: var(--heading); font-weight: 300; font-size: clamp(20px, 2.4vw, 28px); margin: 46px 0 6px; }
+.section-title em { font-style: italic; color: var(--accent); }
+.section-sub { font-size: 12px; font-weight: 300; color: var(--warm-white-dim); margin-bottom: 16px; }
+.lead-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th { text-align: left; font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--concrete-dim); padding: 9px 10px; border-bottom: 1px solid var(--glass-border); }
+td { padding: 11px 10px; font-size: 12.5px; font-weight: 300; border-bottom: 1px solid rgba(244,240,234,0.05); }
+td b { font-weight: 500; }
+.mini-score { font-weight: 600; padding: 4px 10px; border-radius: 999px; font-size: 11px; }
+
+.disclaimer { margin-top: 24px; font-size: 10.5px; color: var(--concrete-dim); line-height: 1.7; max-width: 760px; }
+
+footer { border-top: 1px solid var(--glass-border); padding: 34px 5%; text-align: center; margin-top: 55px; }
+footer .f-brand { font-family: var(--heading); font-weight: 300; letter-spacing: 0.35em; font-size: 15px; margin-bottom: 9px; }
+footer .f-legal { font-size: 10px; color: var(--concrete-dim); }
+
+@media (max-width: 1080px) {
+  .panels { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  header nav a { margin-left: 9px; font-size: 8.5px; letter-spacing: 0.12em; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">SOLA <span>ROOF</span></div>
+  <nav>
+    <a href="index.html">Showcase</a>
+    <a href="options.html">Options</a>
+    <a href="diagnosis.html" class="active">AI Diagnosis</a>
+    <a href="dashboard.html">Estimator</a>
+    <a href="salesmap.html">Sales Map</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="overline">AI Roof Photo Diagnosis</div>
+    <h1>Snap a photo. <em>Know your roof.</em></h1>
+    <p>Upload photos of your roof, ceiling or gutter — AI pre-checks visible issues, scores your roof's health, and recommends the right package with a material checklist, before our team even calls you. AI-assisted pre-inspection — not a final engineering diagnosis.</p>
+    <span class="demo-badge">Interactive Demo — using sample customer photos</span>
+  </div>
+
+  <div class="steps">
+    <div class="stepc"><div class="n">1</div><div class="t">Upload Photos</div><div class="d">Roof, ceiling, gutter or full building view.</div></div>
+    <div class="stepc"><div class="n">2</div><div class="t">AI Tags Issues</div><div class="d">Rust, leak risk, gutter, flashing, heat, old roof.</div></div>
+    <div class="stepc"><div class="n">3</div><div class="t">Roof Health Score</div><div class="d">0–100 score with clear risk level and urgency.</div></div>
+    <div class="stepc"><div class="n">4</div><div class="t">Package + Materials</div><div class="d">Leak-Safe, Cooler Roof, Gutter, Premium or Solar Ready.</div></div>
+  </div>
+
+  <div class="panels">
+    <!-- LEFT: PHOTO INTAKE -->
+    <aside class="panel">
+      <h2>1 · Photo <em>intake</em></h2>
+      <div class="p-sub">Demo mode: pick a sample customer photo below. In the full version, customers upload 1–5 photos of their own roof.</div>
+      <div class="samples" id="samples"><!-- JS --></div>
+      <div class="dropzone">📷 Photo upload is enabled in the full version.<br>This demo uses prepared sample photos.</div>
+      <div class="p-lab">Building Type</div>
+      <select id="f-building" disabled><option id="o-building"></option></select>
+      <div class="p-lab">Location</div>
+      <select id="f-location" disabled><option id="o-location"></option></select>
+      <div class="p-lab">Main Concern</div>
+      <select id="f-concern" disabled><option id="o-concern"></option></select>
+      <div style="margin-top:18px;">
+        <button class="btn btn-primary" id="run-btn">▶ Run AI Diagnosis</button>
+      </div>
+    </aside>
+
+    <!-- MIDDLE: AI RESULT -->
+    <section class="panel">
+      <h2>2 · AI diagnosis <em>result</em></h2>
+      <div class="p-sub">Visible-issue detection, evidence and Roof Health Score.</div>
+      <div class="photo-stage" id="stage">
+        <div class="placeholder" id="stage-ph">Select a sample photo on the left,<br>then press “Run AI Diagnosis”.</div>
+        <img id="stage-img" src="" alt="Roof photo" style="display:none;">
+        <div class="scan-grid"></div>
+        <div class="scan-line"></div>
+        <div class="scan-status" id="scan-status">Analyzing photo…</div>
+        <div id="markers"></div>
+      </div>
+
+      <div class="result-block" id="rb-tags">
+        <div class="p-lab">Detected Issue Tags</div>
+        <div class="tags" id="tags"></div>
+      </div>
+
+      <div class="result-block" id="rb-evi">
+        <div class="p-lab">Visible Evidence</div>
+        <ul class="evi" id="evidence"></ul>
+      </div>
+
+      <div class="result-block" id="rb-score">
+        <div class="p-lab">Roof Health Score</div>
+        <div class="score-row">
+          <div class="gauge">
+            <svg width="130" height="130" viewBox="0 0 130 130">
+              <circle cx="65" cy="65" r="56" fill="none" stroke="rgba(244,240,234,0.08)" stroke-width="10"/>
+              <circle id="g-arc" cx="65" cy="65" r="56" fill="none" stroke="#f5a13d" stroke-width="10"
+                      stroke-linecap="round" stroke-dasharray="351.9" stroke-dashoffset="351.9"
+                      style="transition: stroke-dashoffset 1.4s ease, stroke 0.6s;"/>
+            </svg>
+            <div class="g-val"><div class="g-num" id="g-num">0</div><div class="g-cap">/ 100</div></div>
+          </div>
+          <div class="score-meta">
+            <span class="risk-pill" id="risk-pill">—</span>
+            <div class="urgency" id="urgency"></div>
+            <div class="conf-note" id="conf-note"></div>
+          </div>
+        </div>
+        <div class="p-lab">Score Factors (weighted)</div>
+        <div class="factors" id="factors"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT: RECOMMENDED SOLUTION -->
+    <aside class="panel">
+      <h2>3 · Recommended <em>solution</em></h2>
+      <div class="p-sub">Package, materials and next actions — ready for quotation.</div>
+      <div class="result-block" id="rb-pkg">
+        <div class="pkg-box">
+          <div class="pk-lab">Recommended Package</div>
+          <h3 id="pkg-name">—</h3>
+          <p id="pkg-why"></p>
+          <div class="upg" id="pkg-upg"></div>
+        </div>
+        <div class="p-lab">Material Checklist</div>
+        <ul class="mat-list" id="materials"></ul>
+        <div class="p-lab">Site Visit Checklist</div>
+        <ul class="visit-list" id="visit"></ul>
+        <div class="sol-btns">
+          <a class="btn btn-primary" id="btn-wa" href="#" target="_blank" rel="noopener">📲 Send to WhatsApp</a>
+          <a class="btn btn-ghost" id="btn-visit" href="#" target="_blank" rel="noopener">Request Site Visit</a>
+          <a class="btn btn-ghost" id="btn-est" href="#">Open Cost Estimate</a>
+        </div>
+      </div>
+      <div class="result-block" id="rb-empty" style="opacity:1; transform:none;">
+        <div class="p-sub" id="sol-empty" style="margin-top:6px;">Run the diagnosis to see the recommended package here.</div>
+      </div>
+    </aside>
+  </div>
+
+  <h2 class="section-title">Internal view — <em>sales lead dashboard</em></h2>
+  <div class="section-sub">What your team sees after each customer runs a diagnosis: score, package, urgency and next action — leads arrive pre-qualified.</div>
+  <div class="lead-card">
+    <table>
+      <thead><tr><th>Lead</th><th>Area</th><th>Issue</th><th>Score</th><th>Recommended Package</th><th>Next Action</th></tr></thead>
+      <tbody>
+        <tr><td><b>Mr Wong</b></td><td>Luyang</td><td>Leak + rust</td><td><span class="mini-score" style="background:rgba(224,106,58,0.15); color:#eda98b;">41/100</span></td><td>Leak-Safe Roof System</td><td>Book site visit</td></tr>
+        <tr><td><b>ABC Factory</b></td><td>Kolombong</td><td>Heat + large roof</td><td><span class="mini-score" style="background:rgba(245,161,61,0.15); color:var(--accent);">58/100</span></td><td>PU Insulated Roof</td><td>Prepare B2B proposal</td></tr>
+        <tr><td><b>Mrs Lim</b></td><td>Penampang</td><td>Hot house</td><td><span class="mini-score" style="background:rgba(201,201,74,0.15); color:#c9c94a;">66/100</span></td><td>Cooler Roof, Cooler Home</td><td>Send package comparison</td></tr>
+        <tr><td><b>Shoplot Owner</b></td><td>Gaya Street</td><td>Gutter leak</td><td><span class="mini-score" style="background:rgba(245,161,61,0.15); color:var(--accent);">52/100</span></td><td>Gutter &amp; Downpipe Package</td><td>Visit this week</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="disclaimer">
+    <b>Demo notice:</b> this demonstration runs on prepared sample photos with simulated AI output to illustrate the customer experience. In production, photos are analysed by an AI vision model returning structured JSON (issue tags, evidence, score, package) exactly as shown here.
+    <br><br><b>Positioning:</b> AI assists early diagnosis, recommendation and quotation preparation. Final diagnosis, measurement and quotation always require professional site inspection.
+  </p>
+</div>
+
+<footer>
+  <div class="f-brand">SOLA ROOF</div>
+  <div class="f-legal">Kota Kinabalu, Sabah · AI pre-inspection demo — not a final engineering assessment.</div>
+</footer>
+
+<script>
+/* ================= Sample cases (per AI_Roof_Photo_Diagnosis_Demo_Concept.pdf) ================= */
+/* Score factors & weights: rust/aging 25 · leak 25 · gutter 15 · flashing 15 · heat 10 · location 10 */
+const CASES = [
+  {
+    id: 'terrace-rust', img: 'assets/diagnosis/terrace-rust.webp',
+    label: 'Old Terrace House Roof', sub: 'Luyang · homeowner photo',
+    building: 'Old terrace house', location: 'Luyang, Kota Kinabalu', concern: 'Roof leaking when heavy rain',
+    tags: ['Rust / Corrosion', 'Leak Risk', 'Old Roof Condition', 'Gutter Issue'],
+    evidence: ['Heavy rust patches across metal roof sheets', 'Older repaired section with mismatched sheet', 'Loose / aged fasteners visible near ridge', 'Gutter line shows staining — possible overflow'],
+    markers: [
+      { x: 32, y: 38, lab: 'Rust patch' },
+      { x: 62, y: 30, lab: 'Aged sheet', left: true },
+      { x: 74, y: 62, lab: 'Old gutter line', left: true }
+    ],
+    score: 41, risk: 'High', urgency: 'Site inspection recommended within 1–2 weeks, before the next monsoon period.',
+    factors: { 'Rust / roof aging': [22, 25], 'Leak signs / stain': [15, 25], 'Gutter / drainage': [10, 15], 'Flashing / joints': [7, 15], 'Heat / insulation': [3, 10], 'Location risk': [2, 10] },
+    pkg: 'Leak-Safe Roof System', pkgWhy: 'Visible aging and possible water penetration points. A leak-safe repair scope protects the ceiling before damage spreads.',
+    upg: '↗ Optional upgrade: Heat Insulation Layer while the roof is open.',
+    materials: ['Metal roof sheet (replacement zones)', 'Flashing', 'Gutter + downpipe', 'Waterproof sealant', 'Corrosion-resistant fasteners', 'Waterproofing membrane'],
+    visit: ['Measure actual roof area & pitch', 'Check ceiling cavity for hidden water paths', 'Confirm truss / purlin condition', 'Photograph all flashing joints'],
+    est: 'dashboard.html?building=terrace&system=MR-750&area=120&wp=1&gutter=1&insul=1'
+  },
+  {
+    id: 'ceiling-stain', img: 'assets/diagnosis/ceiling-stain.webp',
+    label: 'Ceiling Water Stain', sub: 'Likas · interior photo',
+    building: 'Semi-D house', location: 'Likas, Kota Kinabalu', concern: 'Brown stains growing on ceiling',
+    tags: ['Leak Risk', 'Flashing Problem'],
+    evidence: ['Large brown water stain spreading from wall corner', 'Peeling paint indicates repeated wetting', 'Mould spots — moisture present over time', 'Stain pattern suggests roof-edge / flashing entry point'],
+    markers: [
+      { x: 40, y: 35, lab: 'Water stain' },
+      { x: 68, y: 55, lab: 'Peeling + mould', left: true }
+    ],
+    score: 47, risk: 'Warning', urgency: 'Leaks visible from inside usually mean water has travelled — inspect before repainting.',
+    factors: { 'Rust / roof aging': [8, 25], 'Leak signs / stain': [22, 25], 'Gutter / drainage': [4, 15], 'Flashing / joints': [12, 15], 'Heat / insulation': [3, 10], 'Location risk': [4, 10] },
+    pkg: 'Leak-Safe Roof System', pkgWhy: 'Interior staining with flashing-pattern entry. Sealing the roof envelope stops the source — repainting alone will not.',
+    upg: '↗ Optional upgrade: ceiling board replacement after waterproofing.',
+    materials: ['Flashing (roof edge / wall joint)', 'Waterproof sealant', 'Waterproofing membrane', 'Fasteners', 'Ceiling board (stained zone)'],
+    visit: ['Trace leak path from stain to roof point', 'Moisture-meter reading on ceiling', 'Check wall-roof joint flashing', 'Confirm extent of board replacement'],
+    est: 'dashboard.html?building=bungalow&system=CL-680&area=150&wp=1'
+  },
+  {
+    id: 'gutter', img: 'assets/diagnosis/gutter.webp',
+    label: 'Shoplot Gutter Problem', sub: 'Gaya Street · exterior photo',
+    building: 'Heritage shoplot', location: 'Gaya Street, KK city centre', concern: 'Water pouring over gutter when raining',
+    tags: ['Gutter Issue', 'Leak Risk', 'Old Roof Condition'],
+    evidence: ['Gutter sagging away from roof edge', 'Blocked with leaves and debris', 'Cracked downpipe joint', 'Dark overflow stains down the wall'],
+    markers: [
+      { x: 38, y: 34, lab: 'Sagging gutter' },
+      { x: 60, y: 52, lab: 'Cracked joint', left: true },
+      { x: 50, y: 76, lab: 'Overflow stain' }
+    ],
+    score: 52, risk: 'Warning', urgency: 'Overflow is soaking the wall — schedule repair before it becomes structural damp.',
+    factors: { 'Rust / roof aging': [10, 25], 'Leak signs / stain': [12, 25], 'Gutter / drainage': [14, 15], 'Flashing / joints': [6, 15], 'Heat / insulation': [2, 10], 'Location risk': [4, 10] },
+    pkg: 'Gutter & Downpipe Package', pkgWhy: 'The roof sheet may still be serviceable — the drainage line is the failure. Replacing gutter and downpipes solves the visible problem at the lowest cost.',
+    upg: '↗ Optional upgrade: waterproofing package for the stained wall zone.',
+    materials: ['Gutter (full run)', 'Downpipe + outlets', 'Brackets', 'Sealant', 'Drainage flow check'],
+    visit: ['Measure gutter run length', 'Check falls / slope toward outlets', 'Inspect fascia board condition', 'Confirm downpipe discharge point'],
+    est: 'dashboard.html?building=shoplot&system=CL-680&area=200&wp=1&gutter=1'
+  },
+  {
+    id: 'factory', img: 'assets/diagnosis/factory-roof.webp',
+    label: 'Factory Roof (Drone View)', sub: 'Kolombong · aerial photo',
+    building: 'Factory / warehouse', location: 'Kolombong industrial belt', concern: 'Workshop too hot + roof aging',
+    tags: ['Heat Opportunity', 'Commercial Roof Risk', 'Rust / Corrosion'],
+    evidence: ['Large uninsulated metal roof area', 'Rust lines forming along sheet seams', 'Shallow ponding patches after rain', 'Skylight strips aged — check sealing'],
+    markers: [
+      { x: 30, y: 42, lab: 'Seam rust line' },
+      { x: 58, y: 58, lab: 'Ponding patch', left: true },
+      { x: 72, y: 30, lab: 'Skylight aging', left: true }
+    ],
+    score: 58, risk: 'Warning', urgency: 'Suitable for planned maintenance — act before rust lines become leak points.',
+    factors: { 'Rust / roof aging': [14, 25], 'Leak signs / stain': [8, 25], 'Gutter / drainage': [5, 15], 'Flashing / joints': [6, 15], 'Heat / insulation': [9, 10], 'Location risk': [0, 10] },
+    pkg: 'PU Insulated Roof + Drone Health Report', pkgWhy: 'Big roof, heat complaint, early-stage rust: PU insulated panels cut cooling cost while a full drone survey maps every seam before quotation.',
+    upg: '↗ Optional upgrade: 20 kWp+ rooftop solar — large roofs pay back fastest.',
+    materials: ['PU insulated metal panels', 'Foil insulation', 'Ventilation units', 'Coated fasteners', 'Drone photo survey set', 'Maintenance plan'],
+    visit: ['Full drone survey of roof plane', 'Thermal reading inside vs outside', 'Check purlin spacing for PU panel spec', 'B2B proposal with maintenance contract'],
+    est: 'dashboard.html?building=factory&system=PU-50&area=2000&solar=20'
+  },
+  {
+    id: 'coastal', img: 'assets/diagnosis/coastal-roof.webp',
+    label: 'Seaside Bungalow Roof', sub: 'Tanjung Aru · homeowner photo',
+    building: 'Coastal bungalow', location: 'Tanjung Aru coastal line', concern: 'Roof looks chalky and rusty near the sea',
+    tags: ['Coastal Corrosion Risk', 'Rust / Corrosion', 'Old Roof Condition'],
+    evidence: ['White oxidation patches — salt-air attack', 'Rusting fastener heads across the sheet', 'Coastal location accelerates corrosion', 'Sheet coating visibly degraded'],
+    markers: [
+      { x: 36, y: 40, lab: 'Salt oxidation' },
+      { x: 64, y: 34, lab: 'Rusty fasteners', left: true }
+    ],
+    score: 44, risk: 'Warning', urgency: 'Salt-air corrosion accelerates — a standard sheet replacement will fail again; use coastal spec.',
+    factors: { 'Rust / roof aging': [18, 25], 'Leak signs / stain': [6, 25], 'Gutter / drainage': [5, 15], 'Flashing / joints': [6, 15], 'Heat / insulation': [4, 10], 'Location risk': [9, 10] },
+    pkg: 'Coastal Anti-Corrosion Package', pkgWhy: 'Visible salt-air corrosion pattern plus seaside location. Anti-corrosion sheet and coated fasteners are engineered for exactly this exposure.',
+    upg: '↗ Optional upgrade: stone-coated premium finish + solar canopy.',
+    materials: ['Anti-corrosion roof sheet', 'Coated fasteners + EPDM washers', 'Protective coating system', 'Marine-grade flashing', 'Gutter (coastal spec)'],
+    visit: ['Confirm corrosion depth vs surface', 'Check underside of sheets from ceiling', 'Measure distance-to-sea exposure factor', 'Premium finish colour consultation'],
+    est: 'dashboard.html?building=resort&system=ST-ROOF&area=180&gutter=1'
+  }
+];
+
+const RISK_COLORS = { 'Good': 'var(--ok)', 'Fair': 'var(--fair)', 'Warning': 'var(--warn)', 'High': 'var(--high)', 'Critical': 'var(--crit)' };
+function scoreColor(s) { return s >= 80 ? 'var(--ok)' : s >= 60 ? 'var(--fair)' : s >= 40 ? 'var(--warn)' : s >= 20 ? 'var(--high)' : 'var(--crit)'; }
+
+let current = null, running = false;
+
+/* build sample list */
+document.getElementById('samples').innerHTML = CASES.map((c, i) => `
+  <div class="sample" data-i="${i}">
+    <img src="${c.img}" alt="${c.label}">
+    <div><div class="s-t">${c.label}</div><div class="s-d">${c.sub}</div></div>
+  </div>`).join('');
+
+document.querySelectorAll('.sample').forEach(s => s.addEventListener('click', () => selectCase(+s.dataset.i)));
+
+function selectCase(i) {
+  if (running) return;
+  current = CASES[i];
+  document.querySelectorAll('.sample').forEach((s, j) => s.classList.toggle('active', j === i));
+  document.getElementById('o-building').textContent = current.building;
+  document.getElementById('o-location').textContent = current.location;
+  document.getElementById('o-concern').textContent = current.concern;
+  const img = document.getElementById('stage-img');
+  img.src = current.img; img.style.display = 'block';
+  document.getElementById('stage-ph').style.display = 'none';
+  resetResults();
+}
+
+function resetResults() {
+  const stage = document.getElementById('stage');
+  stage.classList.remove('scanning', 'done');
+  document.getElementById('markers').innerHTML = '';
+  ['rb-tags','rb-evi','rb-score','rb-pkg'].forEach(id => document.getElementById(id).classList.remove('reveal'));
+  document.getElementById('rb-empty').style.display = '';
+  document.getElementById('g-arc').style.strokeDashoffset = 351.9;
+  document.getElementById('g-num').textContent = '0';
+}
+
+document.getElementById('run-btn').addEventListener('click', () => {
+  if (!current) { selectCase(0); }
+  if (running) return;
+  running = true;
+  resetResults();
+  const stage = document.getElementById('stage');
+  const status = document.getElementById('scan-status');
+  stage.classList.add('scanning');
+  const phases = ['Analyzing photo…', 'Detecting roof surface…', 'Tagging visible issues…', 'Scoring roof health…'];
+  phases.forEach((p, i) => setTimeout(() => status.textContent = p, i * 800));
+
+  setTimeout(() => {
+    stage.classList.remove('scanning');
+    stage.classList.add('done');
+    status.textContent = '✓ Analysis complete';
+    showResults();
+    running = false;
+  }, 3300);
+});
+
+function showResults() {
+  const c = current;
+  /* markers */
+  document.getElementById('markers').innerHTML = c.markers.map(m => `
+    <div class="marker${m.left ? ' left' : ''}" style="left:${m.x}%; top:${m.y}%;"><span class="m-lab">${m.lab}</span></div>`).join('');
+  document.querySelectorAll('.marker').forEach((m, i) => setTimeout(() => m.classList.add('show'), 150 + i * 350));
+
+  /* tags + evidence */
+  document.getElementById('tags').innerHTML = c.tags.map(t => `<span class="tag">${t}</span>`).join('');
+  document.getElementById('evidence').innerHTML = c.evidence.map(e => `<li>${e}</li>`).join('');
+  setTimeout(() => document.getElementById('rb-tags').classList.add('reveal'), 200);
+  setTimeout(() => document.getElementById('rb-evi').classList.add('reveal'), 500);
+
+  /* score gauge */
+  setTimeout(() => {
+    document.getElementById('rb-score').classList.add('reveal');
+    const arc = document.getElementById('g-arc');
+    const col = scoreColor(c.score);
+    arc.style.stroke = col;
+    arc.style.strokeDashoffset = 351.9 * (1 - c.score / 100);
+    const numEl = document.getElementById('g-num');
+    numEl.style.color = col;
+    const t0 = performance.now();
+    (function tick(t) {
+      const k = Math.min(1, (t - t0) / 1400);
+      numEl.textContent = Math.round(c.score * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(tick);
+    })(t0);
+    // rAF is paused in background tabs — guarantee the final value lands
+    setTimeout(() => { numEl.textContent = c.score; }, 1500);
+    const pill = document.getElementById('risk-pill');
+    pill.textContent = 'Risk: ' + c.risk;
+    pill.style.background = 'color-mix(in srgb, ' + RISK_COLORS[c.risk] + ' 18%, transparent)';
+    pill.style.color = RISK_COLORS[c.risk];
+    document.getElementById('urgency').textContent = c.urgency;
+    document.getElementById('conf-note').textContent = 'AI confidence note: based on visible photo evidence only — final diagnosis requires site inspection.';
+    document.getElementById('factors').innerHTML = Object.entries(c.factors).map(([k, [v, w]]) => `
+      <div class="factor-row"><div class="f-lab">${k}</div>
+        <div class="f-track"><div class="f-fill" data-w="${v / w * 100}" style="background:${v / w > 0.66 ? 'var(--high)' : v / w > 0.4 ? 'var(--warn)' : 'var(--sky-blue)'};"></div></div>
+        <div class="f-w">${v}/${w}</div></div>`).join('');
+    setTimeout(() => document.querySelectorAll('.f-fill').forEach(f => f.style.width = f.dataset.w + '%'), 60);
+  }, 900);
+
+  /* solution */
+  setTimeout(() => {
+    document.getElementById('rb-empty').style.display = 'none';
+    document.getElementById('rb-pkg').classList.add('reveal');
+    document.getElementById('pkg-name').textContent = c.pkg;
+    document.getElementById('pkg-why').textContent = c.pkgWhy;
+    document.getElementById('pkg-upg').textContent = c.upg;
+    document.getElementById('materials').innerHTML = c.materials.map(m => `<li>${m}</li>`).join('');
+    document.getElementById('visit').innerHTML = c.visit.map(v => `<li>${v}</li>`).join('');
+    const summary = [
+      'AI ROOF DIAGNOSIS - Lead Summary',
+      'Building: ' + c.building,
+      'Location: ' + c.location,
+      'Concern: ' + c.concern,
+      'Issues: ' + c.tags.join(', '),
+      'Roof Health Score: ' + c.score + '/100 (' + c.risk + ')',
+      'Recommended: ' + c.pkg,
+      '',
+      '(AI pre-inspection - site visit required for final quote)'
+    ].join('\n');
+    document.getElementById('btn-wa').href = 'https://wa.me/60178128424?text=' + encodeURIComponent(summary);
+    document.getElementById('btn-visit').href = 'https://wa.me/60178128424?text=' + encodeURIComponent('Hi, my AI roof diagnosis score is ' + c.score + '/100 (' + c.risk + '). I would like to book a site inspection at ' + c.location + '.');
+    document.getElementById('btn-est').href = c.est;
+  }, 1400);
+}
+
+/* preselect first case for instant demo feel */
+selectCase(0);
+</script>
+</body>
+</html>
