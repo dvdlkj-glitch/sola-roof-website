@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0d0c">
+<title>SOLA ROOF — Roofing Options &amp; Renovation Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --concrete-dim: #9e9890;
+  --charcoal: #1a1816;
+  --ink: #0e0d0c;
+  --warm-white: #f4f0ea;
+  --warm-white-dim: #c8c0b4;
+  --accent: #f5a13d;
+  --accent-glow: rgba(245, 161, 61, 0.35);
+  --sky-blue: #4a8fd4;
+  --gold-warm: #c89848;
+  --heading: 'Playfair Display', 'Georgia', serif;
+  --body: 'DM Sans', -apple-system, sans-serif;
+  --glass: rgba(244, 240, 234, 0.03);
+  --glass-border: rgba(244, 240, 234, 0.07);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--ink); color: var(--warm-white); font-family: var(--body); }
+
+header {
+  padding: 26px 5% 22px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky; top: 0; background: rgba(14,13,12,0.9);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); z-index: 500;
+}
+header .brand { font-family: var(--heading); font-weight: 300; font-size: 19px; letter-spacing: 0.35em; }
+header .brand span { color: var(--accent); }
+header nav a {
+  color: var(--warm-white-dim); text-decoration: none; font-size: 10px;
+  letter-spacing: 0.25em; text-transform: uppercase; margin-left: 20px; transition: color .3s;
+}
+header nav a:hover, header nav a.active { color: var(--accent); }
+
+.wrap { max-width: 1280px; margin: 0 auto; padding: 44px 4% 70px; }
+.overline {
+  font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px; font-weight: 500;
+}
+.page-head h1 { font-family: var(--heading); font-weight: 300; font-size: clamp(28px, 3.8vw, 46px); }
+.page-head h1 em { font-style: italic; color: var(--accent); }
+.page-head p { margin: 14px 0 0; font-size: 13.5px; font-weight: 300; color: var(--warm-white-dim); max-width: 660px; line-height: 1.75; }
+
+/* Journey filter pills */
+.journeys { display: flex; flex-wrap: wrap; gap: 8px; margin: 30px 0 8px; }
+.pill {
+  padding: 11px 20px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--glass-border); background: var(--glass);
+  color: var(--warm-white-dim); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-weight: 500; transition: all .3s; user-select: none;
+}
+.pill:hover { border-color: var(--accent); color: var(--accent); }
+.pill.active { background: var(--accent); border-color: var(--accent); color: #1a1204; }
+.journey-hint { font-size: 11.5px; color: var(--concrete-dim); margin: 10px 0 0; min-height: 18px; }
+
+/* Package strip */
+.section-title { font-family: var(--heading); font-weight: 300; font-size: clamp(22px, 2.6vw, 32px); margin: 46px 0 6px; }
+.section-title em { font-style: italic; color: var(--accent); }
+.section-sub { font-size: 12.5px; font-weight: 300; color: var(--warm-white-dim); margin-bottom: 20px; }
+.packages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.pkg {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px;
+  padding: 24px; display: flex; flex-direction: column; transition: border-color .3s, transform .3s;
+}
+.pkg:hover { border-color: rgba(245,161,61,0.35); transform: translateY(-3px); }
+.pkg.mid { border-color: rgba(245,161,61,0.35); background: rgba(245,161,61,0.05); }
+.pkg .p-tier { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.pkg h3 { font-family: var(--heading); font-weight: 400; font-size: 21px; margin: 8px 0 2px; }
+.pkg .cost-level { color: var(--gold-warm); font-size: 15px; letter-spacing: 3px; margin-bottom: 12px; }
+.pkg ul { list-style: none; margin-bottom: 14px; }
+.pkg li { font-size: 12.5px; font-weight: 300; color: var(--warm-white-dim); padding: 6px 0 6px 16px; position: relative; border-bottom: 1px solid rgba(244,240,234,0.05); }
+.pkg li::before { content: '✓'; position: absolute; left: 0; color: var(--accent); font-size: 11px; }
+.pkg .best-for { font-size: 11px; color: var(--concrete-dim); line-height: 1.6; margin-bottom: 16px; }
+.pkg .rate { font-size: 13px; color: var(--gold-warm); font-weight: 500; margin-bottom: 14px; }
+.btn {
+  display: block; text-align: center; padding: 12px 18px; border-radius: 999px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
+  text-decoration: none; transition: transform .3s, box-shadow .3s; margin-top: auto;
+}
+.btn-primary { background: var(--accent); color: #1a1204; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
+.btn-ghost { border: 1px solid rgba(244,240,234,0.25); color: var(--warm-white); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Guide cards */
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.gcard {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px;
+  overflow: hidden; display: flex; flex-direction: column; transition: border-color .3s, transform .3s;
+}
+.gcard:hover { border-color: rgba(245,161,61,0.3); transform: translateY(-3px); }
+.gcard.hidden { display: none; }
+.gcard .img-wrap { position: relative; cursor: zoom-in; overflow: hidden; aspect-ratio: 16/9; background: #131110; }
+.gcard img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s ease; }
+.gcard .img-wrap:hover img { transform: scale(1.03); }
+.gcard .zoom-hint {
+  position: absolute; right: 12px; bottom: 10px; font-size: 9px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(244,240,234,0.9);
+  background: rgba(14,13,12,0.65); padding: 5px 10px; border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+.gcard .body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+.gcard .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+.tag {
+  font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+  padding: 4px 9px; border-radius: 999px;
+  background: rgba(74,143,212,0.12); border: 1px solid rgba(74,143,212,0.22); color: #9cc4e8;
+}
+.tag.hot { background: rgba(245,161,61,0.12); border-color: rgba(245,161,61,0.3); color: var(--accent); }
+.gcard h3 { font-family: var(--heading); font-weight: 400; font-size: 18px; margin-bottom: 7px; }
+.gcard p { font-size: 12.5px; font-weight: 300; color: var(--warm-white-dim); line-height: 1.65; margin-bottom: 16px; }
+.gcard .row { display: flex; gap: 8px; margin-top: auto; }
+.gcard .row .btn { flex: 1; padding: 11px 10px; font-size: 9px; }
+
+/* CTA */
+.cta-band {
+  margin-top: 50px; background: var(--charcoal); border: 1px solid var(--glass-border);
+  border-radius: 18px; padding: 40px 5%; text-align: center;
+}
+.cta-band h2 { font-family: var(--heading); font-weight: 300; font-size: clamp(22px, 2.8vw, 34px); margin-bottom: 10px; }
+.cta-band h2 em { font-style: italic; color: var(--accent); }
+.cta-band p { font-size: 12.5px; font-weight: 300; color: var(--warm-white-dim); margin-bottom: 22px; }
+.cta-band .btn { display: inline-block; margin: 0 5px; }
+
+/* Lightbox */
+#lightbox {
+  position: fixed; inset: 0; z-index: 2000; background: rgba(10,9,8,0.94);
+  display: none; align-items: center; justify-content: center; padding: 3vh 3vw;
+  backdrop-filter: blur(10px); cursor: zoom-out;
+}
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 96%; max-height: 88vh; border-radius: 10px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+#lightbox .lb-cap {
+  position: absolute; bottom: 3vh; left: 0; right: 0; text-align: center;
+  font-size: 12px; color: var(--warm-white-dim); letter-spacing: 0.08em;
+}
+#lightbox .lb-close {
+  position: absolute; top: 22px; right: 30px; font-size: 26px; color: var(--warm-white);
+  cursor: pointer; opacity: 0.7;
+}
+#lightbox .lb-close:hover { opacity: 1; }
+
+footer { border-top: 1px solid var(--glass-border); padding: 34px 5%; text-align: center; margin-top: 60px; }
+footer .f-brand { font-family: var(--heading); font-weight: 300; letter-spacing: 0.35em; font-size: 15px; margin-bottom: 9px; }
+footer .f-legal { font-size: 10px; color: var(--concrete-dim); line-height: 1.7; }
+
+@media (max-width: 900px) {
+  .cards, .packages { grid-template-columns: 1fr; }
+  header nav a { margin-left: 10px; font-size: 8.5px; letter-spacing: 0.15em; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">SOLA <span>ROOF</span></div>
+  <nav>
+    <a href="index.html">Showcase</a>
+    <a href="options.html" class="active">Options</a>
+    <a href="dashboard.html">Estimator</a>
+    <a href="salesmap.html">Sales Map</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="overline">Roofing Options &amp; Renovation Guide</div>
+    <h1>Not sure which roof? <em>See every option.</em></h1>
+    <p>Solar is only one part of the story. Whether your roof leaks, your house feels like an oven, or you want a full makeover — start with what you need, compare the options visually, and get an instant budget for any of them.</p>
+  </div>
+
+  <div class="journeys" id="journeys">
+    <div class="pill active" data-cat="all">All Options</div>
+    <div class="pill" data-cat="leak">🔧 Stop the Leaks</div>
+    <div class="pill" data-cat="heat">🌡️ Cool My Home</div>
+    <div class="pill" data-cat="makeover">🏠 Full Roof Makeover</div>
+    <div class="pill" data-cat="solar">☀️ Go Solar &amp; Outdoor</div>
+    <div class="pill" data-cat="developer">🏘️ For Developers</div>
+  </div>
+  <div class="journey-hint" id="journey-hint"></div>
+
+  <h2 class="section-title">Three packages, <em>one standard of quality</em></h2>
+  <div class="section-sub">The quickest way to understand your choices — most renovation clients land on one of these three.</div>
+  <div class="packages">
+    <div class="pkg">
+      <div class="p-tier">Basic Package</div>
+      <h3>Essential Metal Roof</h3>
+      <div class="cost-level">$</div>
+      <ul>
+        <li>Longrun metal roofing</li>
+        <li>Lightweight steel truss &amp; C-purlin</li>
+        <li>Gutter &amp; drainage</li>
+        <li>Waterproofing</li>
+      </ul>
+      <div class="rate">RM 55 – 95 / sqm (roof sheet)</div>
+      <div class="best-for">Best for: budget projects, rental units, sheds, fast replacement.</div>
+      <a class="btn btn-primary" href="dashboard.html?building=terrace&system=MR-750&area=120&truss=1&gutter=1">Estimate This Package</a>
+    </div>
+    <div class="pkg mid">
+      <div class="p-tier">Insulated Package · Most Popular</div>
+      <h3>Cool &amp; Quiet Roof</h3>
+      <div class="cost-level">$$</div>
+      <ul>
+        <li>PU insulated metal panels (5/5 heat score)</li>
+        <li>Steel truss &amp; C-purlin</li>
+        <li>Gutter &amp; drainage + waterproofing</li>
+        <li>Cuts heat &amp; rain noise, saves aircon</li>
+      </ul>
+      <div class="rate">RM 120 – 220 / sqm (roof panel)</div>
+      <div class="best-for">Best for: houses, townhouses, cafés — most residential renovations.</div>
+      <a class="btn btn-primary" href="dashboard.html?building=bungalow&system=PU-50&area=140&truss=1&gutter=1">Estimate This Package</a>
+    </div>
+    <div class="pkg">
+      <div class="p-tier">Premium Package</div>
+      <h3>Signature Finish</h3>
+      <div class="cost-level">$$$</div>
+      <ul>
+        <li>Clip lock / standing seam or stone-coated tile</li>
+        <li>Concealed fastening — no screw leaks</li>
+        <li>High-density insulation core</li>
+        <li>Premium flashing &amp; heavy-duty gutter</li>
+      </ul>
+      <div class="rate">RM 85 – 200 / sqm (system)</div>
+      <div class="best-for">Best for: premium homes, commercial buildings, upmarket developments.</div>
+      <a class="btn btn-primary" href="dashboard.html?building=bungalow&system=CL-680&area=160&truss=1&gutter=1&insul=1">Estimate This Package</a>
+    </div>
+  </div>
+
+  <h2 class="section-title">The visual <em>guide library</em></h2>
+  <div class="section-sub">Tap any guide to view it full-screen — perfect for showing clients on a tablet or phone.</div>
+  <div class="cards" id="cards"><!-- filled by JS --></div>
+
+  <div class="cta-band">
+    <h2>Still not sure? <em>Get a free site inspection.</em></h2>
+    <p>Send us a photo of your roof on WhatsApp — we'll tell you which options fit and what they cost.</p>
+    <a class="btn btn-primary" href="https://wa.me/60178128424?text=Hi%2C%20I%27m%20looking%20at%20roofing%20options%20for%20a%20renovation.%20Can%20I%20get%20a%20free%20site%20inspection%3F" target="_blank" rel="noopener">📲 WhatsApp 017-812 8424</a>
+    <a class="btn btn-ghost" href="dashboard.html">Open Cost Estimator</a>
+  </div>
+</div>
+
+<div id="lightbox">
+  <span class="lb-close">✕</span>
+  <img id="lb-img" src="" alt="Guide full view">
+  <div class="lb-cap" id="lb-cap"></div>
+</div>
+
+<footer>
+  <div class="f-brand">SOLA ROOF</div>
+  <div class="f-legal">Kota Kinabalu, Sabah · Stronger Roof. Safer Home. · All prices are indicative sample ranges, not a formal quotation.</div>
+</footer>
+
+<script>
+/* ================= Guide library ================= */
+const GUIDES = [
+  { img: 'leak-transformed', title: 'Old Leaking Roof — Transformed', cats: ['leak', 'makeover'],
+    desc: 'Before/after of a full repair: new metal sheets, flashing, gutter replacement, waterproof sealant and corrosion-resistant fasteners.',
+    est: 'dashboard.html?building=terrace&system=MR-750&area=120&wp=1&gutter=1', hot: 'Renovation Favourite' },
+  { img: 'leak-safe-system', title: 'Leak-Safe Roof System', cats: ['leak'],
+    desc: 'The six components that keep rain out — roof sheet, flashing, gutter, sealant, fasteners and waterproofing membrane, explained simply.',
+    est: 'dashboard.html?building=terrace&system=MR-750&area=120&wp=1' },
+  { img: 'leak-checklist', title: '5 Common Causes of Roof Leakage', cats: ['leak'],
+    desc: 'A self-check list: sheets, flashing, gutter, downpipe, sealant and fasteners — spot the small issues before they become ceiling damage.',
+    est: 'dashboard.html?wp=1' },
+  { img: 'waterproofing-before-after', title: 'Flat Roof Waterproofing', cats: ['leak'],
+    desc: 'Seamless membrane coating for concrete flat roofs — before/after with repaired flashing detail. Ideal for shoplots and older buildings.',
+    est: 'dashboard.html?building=shoplot&system=CL-680&area=200&wp=1' },
+  { img: 'cooler-roof', title: 'Cooler Roof, Cooler Home', cats: ['heat'],
+    desc: 'Why old zinc roofs cook the house — and how a PU insulated system with foil, ventilation and ceiling board changes daily comfort.',
+    est: 'dashboard.html?building=terrace&system=PU-50&area=120&insul=1', hot: 'Most Asked' },
+  { img: 'reduce-roof-heat', title: 'Reduce Roof Heat — The Right System', cats: ['heat'],
+    desc: 'Heat insulation upgrade demo: PU panels, heat & sound layer, aluminium foil, ventilation and ceiling board working together.',
+    est: 'dashboard.html?building=bungalow&system=PU-50&area=140&insul=1' },
+  { img: 'insulation-install', title: 'Insulation Layer Installation', cats: ['heat'],
+    desc: 'What the retrofit actually looks like: reflective foil and insulation batts installed under the metal roof — no full roof replacement needed.',
+    est: 'dashboard.html?system=MR-750&insul=1' },
+  { img: 'developer-packages', title: 'Basic vs Insulated vs Premium', cats: ['makeover', 'developer'],
+    desc: 'The clearest comparison: cost level, heat comfort, appearance and best use for each of the three packages.',
+    est: 'dashboard.html?building=bungalow&system=PU-50&area=140', hot: 'Start Here' },
+  { img: 'material-comparison', title: 'Material Comparison Chart', cats: ['makeover', 'developer'],
+    desc: 'Side-by-side detail: sheet thickness, insulation core, fastening type, flashing, gutter and structure compatibility per tier.',
+    est: 'dashboard.html?building=bungalow&system=CL-680&area=160' },
+  { img: 'cost-guide', title: 'Roof Replacement Cost Guide (Sabah)', cats: ['makeover'],
+    desc: 'Sample per-square-foot ranges: basic metal, heat insulation upgrade, premium clip lock, waterproofing repair and gutter replacement.',
+    est: 'dashboard.html' },
+  { img: 'profile-catalog', title: 'Roof Profile Catalog', cats: ['makeover', 'developer'],
+    desc: 'Choose by design intent: longrun, clip lock, standing seam, stone-coated tile and canopy profiles — with typical applications.',
+    est: 'dashboard.html?building=bungalow&system=ST-ROOF&area=160' },
+  { img: 'visual-selection', title: 'Visual Roof Selection & Colour Matching', cats: ['makeover'],
+    desc: 'How we present options to clients: roof colour + façade matching, spec sheet and the full roof build-up diagram.',
+    est: 'dashboard.html?building=bungalow&system=ST-ROOF&area=160' },
+  { img: 'solar-ready-roof', title: 'Solar Ready Roof', cats: ['solar'],
+    desc: 'PV panels, BIPV tile options, solar canopy, inverter, monitoring app and compliance — the future-ready upgrade explained.',
+    est: 'dashboard.html?building=bungalow&system=PU-50&area=140&solar=6&battery=1' },
+  { img: 'canopy-solution', title: 'Canopy / Awning Solution', cats: ['solar', 'makeover'],
+    desc: 'Rain and UV protection for cafés, shopfronts and car porches — stylish, durable, low maintenance. Can double as a solar surface.',
+    est: 'dashboard.html?building=container&system=MR-750&area=60&carport=40' },
+  { img: 'developer-housing', title: 'Standardize Roofing Across Housing Projects', cats: ['developer'],
+    desc: 'Developer roof package: one standard of quality across all units — with cost control, faster construction and long-term value.',
+    est: 'dashboard.html?building=terrace&system=PU-50&area=1200&truss=1&gutter=1', hot: 'For Developers' },
+  { img: 'quotation-workflow', title: 'From Drawing to Roof Package Estimate', cats: ['developer'],
+    desc: 'The 6-step bulk quotation workflow: drawing submission → material selection → spec review → budget estimate → quotation → delivery.',
+    est: 'dashboard.html?building=factory&system=PU-50&area=2000' },
+  { img: 'projects-portfolio', title: 'Completed Projects Across Sabah', cats: ['makeover', 'developer'],
+    desc: 'Reference portfolio: residential, commercial, government, factory and roof-upgrade projects from Kudat to Semporna.',
+    est: 'dashboard.html' }
+];
+
+const HINTS = {
+  all: '',
+  leak: 'Rain coming in? Start with the leak checklist, then compare repair vs replacement.',
+  heat: 'House too hot? Insulation can be retrofitted — you may not need a full new roof.',
+  makeover: 'Replacing everything? Compare the three packages first, then pick profile and colour.',
+  solar: 'Solar works best on a sound roof — pair it with an insulated or premium system.',
+  developer: 'Standardize one spec across all units — bulk pricing via the quotation workflow.'
+};
+
+/* render cards */
+document.getElementById('cards').innerHTML = GUIDES.map((g, i) => `
+  <div class="gcard" data-cats="${g.cats.join(' ')}">
+    <div class="img-wrap" data-idx="${i}">
+      <img loading="lazy" src="assets/options/${g.img}.webp" alt="${g.title}">
+      <span class="zoom-hint">Tap to view</span>
+    </div>
+    <div class="body">
+      <div class="tags">
+        ${g.hot ? `<span class="tag hot">${g.hot}</span>` : ''}
+        ${g.cats.map(c => `<span class="tag">${{leak:'Leak Repair',heat:'Heat Comfort',makeover:'Makeover',solar:'Solar & Outdoor',developer:'Developer'}[c]}</span>`).join('')}
+      </div>
+      <h3>${g.title}</h3>
+      <p>${g.desc}</p>
+      <div class="row">
+        <a class="btn btn-primary" href="${g.est}">Get Estimate</a>
+        <a class="btn btn-ghost" href="https://wa.me/60178128424?text=${encodeURIComponent('Hi, I saw the "' + g.title + '" guide — can I get advice for my roof?')}" target="_blank" rel="noopener">Ask on WhatsApp</a>
+      </div>
+    </div>
+  </div>`).join('');
+
+/* journey filter */
+const pills = [...document.querySelectorAll('.pill')];
+pills.forEach(p => p.addEventListener('click', () => {
+  pills.forEach(x => x.classList.remove('active'));
+  p.classList.add('active');
+  const cat = p.dataset.cat;
+  document.getElementById('journey-hint').textContent = HINTS[cat];
+  document.querySelectorAll('.gcard').forEach(c => {
+    c.classList.toggle('hidden', cat !== 'all' && !c.dataset.cats.split(' ').includes(cat));
+  });
+}));
+
+/* lightbox */
+const lb = document.getElementById('lightbox');
+document.querySelectorAll('.img-wrap').forEach(w => w.addEventListener('click', () => {
+  const g = GUIDES[+w.dataset.idx];
+  document.getElementById('lb-img').src = 'assets/options/' + g.img + '.webp';
+  document.getElementById('lb-cap').textContent = g.title;
+  lb.classList.add('open');
+}));
+lb.addEventListener('click', () => lb.classList.remove('open'));
+addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+</script>
+</body>
+</html>

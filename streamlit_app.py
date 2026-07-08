@@ -34,6 +34,8 @@ st.markdown(
       &nbsp;·&nbsp;
       <a href="{DASHBOARD_URL}" target="_blank" style="color:#f5a13d;">open the cost estimator dashboard</a>
       &nbsp;·&nbsp;
+      <a href="{PAGES_BASE}/options.html" target="_blank" style="color:#f5a13d;">browse roofing options</a>
+      &nbsp;·&nbsp;
       <a href="{PAGES_BASE}/salesmap.html" target="_blank" style="color:#f5a13d;">open the AI sales potential map</a>
     </div>
     """,

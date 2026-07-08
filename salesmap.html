@@ -168,6 +168,7 @@ footer .f-legal { font-size: 10px; color: var(--concrete-dim); }
   <div class="brand">SOLA <span>ROOF</span></div>
   <nav>
     <a href="index.html">Showcase</a>
+    <a href="options.html">Options</a>
     <a href="dashboard.html">Estimator</a>
     <a href="salesmap.html" class="active">Sales Map</a>
   </nav>
@@ -392,7 +393,7 @@ function selectZone(rank) {
     <ul class="talk-list">${z.talk.map(t => `<li>${t}</li>`).join('')}</ul>
     <div class="btns">
       <a class="btn btn-primary" href="${z.est}">Open Pre-Configured Estimate →</a>
-      <a class="btn btn-ghost" href="https://wa.me/60123456789?text=${encodeURIComponent('Sales lead — zone: ' + z.name + ' (' + z.pct + '% potential). Approach: ' + z.approach)}" target="_blank" rel="noopener">Log Lead via WhatsApp</a>
+      <a class="btn btn-ghost" href="https://wa.me/60178128424?text=${encodeURIComponent('Sales lead — zone: ' + z.name + ' (' + z.pct + '% potential). Approach: ' + z.approach)}" target="_blank" rel="noopener">Log Lead via WhatsApp</a>
     </div>`;
 }
 selectZone(1);
