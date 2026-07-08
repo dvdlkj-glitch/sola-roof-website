@@ -67,6 +67,12 @@ header nav a:hover, header nav a.active { color: var(--accent); }
 .zone-label {
   background: none !important; border: none !important; box-shadow: none !important;
 }
+.leaflet-control-layers {
+  background: rgba(14,13,12,0.85) !important; color: var(--warm-white) !important;
+  border: 1px solid var(--glass-border) !important; border-radius: 10px !important;
+  font-size: 11px; backdrop-filter: blur(10px);
+}
+.leaflet-control-layers label { padding: 2px 4px; }
 .zone-label .pct-badge {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   width: 54px; height: 54px; border-radius: 50%;
@@ -325,10 +331,21 @@ const ZONES = [
 /* ================= Map ================= */
 const map = L.map('map', { scrollWheelZoom: true, zoomControl: true })
   .setView([5.975, 116.10], 12);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap &copy; CARTO',
-  maxZoom: 18
-}).addTo(map);
+
+// Satellite view (like the original AI analysis infographic) + place-name labels
+const satellite = L.layerGroup([
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics', maxZoom: 19
+  }),
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, pane: 'shadowPane'  // labels above imagery, below zone polygons
+  })
+]);
+const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 18
+});
+satellite.addTo(map);
+L.control.layers({ 'Satellite': satellite, 'Dark': dark }, null, { position: 'topleft', collapsed: false }).addTo(map);
 
 const layers = {};
 ZONES.forEach(z => {
