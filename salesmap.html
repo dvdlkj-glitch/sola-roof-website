@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0e0d0c">
+<title>SOLA ROOF — AI Sales Potential Map · Kota Kinabalu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root {
+  --concrete-dim: #9e9890;
+  --charcoal: #1a1816;
+  --ink: #0e0d0c;
+  --warm-white: #f4f0ea;
+  --warm-white-dim: #c8c0b4;
+  --accent: #f5a13d;
+  --accent-glow: rgba(245, 161, 61, 0.35);
+  --sky-blue: #4a8fd4;
+  --gold-warm: #c89848;
+  --heading: 'Playfair Display', 'Georgia', serif;
+  --body: 'DM Sans', -apple-system, sans-serif;
+  --glass: rgba(244, 240, 234, 0.03);
+  --glass-border: rgba(244, 240, 234, 0.07);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--ink); color: var(--warm-white); font-family: var(--body); }
+
+header {
+  padding: 26px 5% 22px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky; top: 0; background: rgba(14,13,12,0.9);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); z-index: 1200;
+}
+header .brand { font-family: var(--heading); font-weight: 300; font-size: 19px; letter-spacing: 0.35em; }
+header .brand span { color: var(--accent); }
+header nav a {
+  color: var(--warm-white-dim); text-decoration: none; font-size: 10px;
+  letter-spacing: 0.25em; text-transform: uppercase; margin-left: 22px; transition: color .3s;
+}
+header nav a:hover, header nav a.active { color: var(--accent); }
+
+.wrap { max-width: 1320px; margin: 0 auto; padding: 40px 4% 70px; }
+.overline {
+  font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px; font-weight: 500;
+}
+.page-head h1 { font-family: var(--heading); font-weight: 300; font-size: clamp(28px, 3.8vw, 44px); }
+.page-head h1 em { font-style: italic; color: var(--accent); }
+.page-head p { margin: 12px 0 0; font-size: 13.5px; font-weight: 300; color: var(--warm-white-dim); max-width: 680px; line-height: 1.7; }
+
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 30px 0 26px; }
+.kpi { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px 20px; }
+.kpi .num { font-family: var(--heading); font-size: 25px; }
+.kpi .num span { font-size: 13px; color: var(--concrete-dim); }
+.kpi .lab { margin-top: 4px; font-size: 8px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--concrete-dim); }
+.kpi.hot .num { color: var(--accent); }
+
+.map-layout { display: grid; grid-template-columns: 1fr 380px; gap: 16px; align-items: stretch; }
+#map {
+  height: 620px; border-radius: 16px; border: 1px solid var(--glass-border);
+  background: #111; z-index: 1;
+}
+.leaflet-container { font-family: var(--body); }
+.zone-label {
+  background: none !important; border: none !important; box-shadow: none !important;
+}
+.zone-label .pct-badge {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 54px; height: 54px; border-radius: 50%;
+  font-weight: 600; font-size: 14px; color: #fff;
+  border: 2px solid rgba(255,255,255,0.85);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+  cursor: pointer; transition: transform .2s ease;
+}
+.zone-label .pct-badge small { font-size: 8px; font-weight: 500; opacity: 0.9; }
+.zone-label .pct-badge:hover { transform: scale(1.1); }
+
+/* Side panel */
+.panel {
+  background: var(--charcoal); border: 1px solid var(--glass-border); border-radius: 16px;
+  padding: 22px; display: flex; flex-direction: column; overflow-y: auto; max-height: 620px;
+}
+.panel .rank-row { display: flex; align-items: center; gap: 12px; }
+.rank-badge {
+  width: 40px; height: 40px; border-radius: 10px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--heading); font-size: 19px; color: #fff;
+}
+.panel h2 { font-family: var(--heading); font-weight: 400; font-size: 19px; line-height: 1.3; }
+.panel .pct-line { margin: 14px 0 4px; display: flex; align-items: baseline; gap: 10px; }
+.panel .pct { font-family: var(--heading); font-size: 38px; color: var(--accent); }
+.panel .stars { color: var(--gold-warm); font-size: 14px; letter-spacing: 2px; }
+.panel .p-lab { font-size: 8.5px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--concrete-dim); margin: 16px 0 7px; }
+.panel .profile, .panel .approach { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--warm-white-dim); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-size: 10px; padding: 6px 11px; border-radius: 999px;
+  background: rgba(74,143,212,0.1); border: 1px solid rgba(74,143,212,0.25); color: #9cc4e8;
+}
+.talk-list { list-style: none; }
+.talk-list li {
+  font-size: 12px; font-weight: 300; color: var(--warm-white-dim); line-height: 1.65;
+  padding: 7px 0 7px 18px; position: relative; border-bottom: 1px solid rgba(244,240,234,0.05);
+}
+.talk-list li::before { content: '◆'; position: absolute; left: 0; top: 8px; font-size: 9px; color: var(--accent); }
+.panel .btns { margin-top: auto; padding-top: 18px; display: grid; gap: 8px; }
+.btn {
+  display: block; text-align: center; padding: 13px 18px; border-radius: 999px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  text-decoration: none; transition: transform .3s, box-shadow .3s;
+}
+.btn-primary { background: var(--accent); color: #1a1204; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
+.btn-ghost { border: 1px solid rgba(244,240,234,0.25); color: var(--warm-white); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Strategy + factors */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+.card {
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 22px;
+}
+.card h3 { font-family: var(--heading); font-weight: 400; font-size: 17px; margin-bottom: 14px; }
+.card h3 em { font-style: italic; color: var(--accent); }
+.step { display: flex; gap: 12px; padding: 9px 0; align-items: baseline; }
+.step .n {
+  flex: 0 0 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #1a1204;
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+}
+.step p { font-size: 12.5px; font-weight: 300; color: var(--warm-white-dim); line-height: 1.6; }
+.factor { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; font-size: 12.5px; font-weight: 300; color: var(--warm-white-dim); }
+.factor::before { content: '▸'; color: var(--sky-blue); }
+.conf-bar { height: 7px; border-radius: 4px; background: rgba(244,240,234,0.07); overflow: hidden; margin: 10px 0 6px; }
+.conf-fill { height: 100%; width: 92%; border-radius: 4px; background: linear-gradient(90deg, #7fbf5f, #a8d878); }
+.conf-num { font-family: var(--heading); font-size: 30px; color: #a8d878; }
+.section-head { margin: 44px 0 8px; }
+
+.info-note {
+  margin-top: 22px; font-size: 10.5px; color: var(--concrete-dim); line-height: 1.7;
+}
+.info-note a { color: var(--accent); }
+
+footer { border-top: 1px solid var(--glass-border); padding: 34px 5%; text-align: center; margin-top: 50px; }
+footer .f-brand { font-family: var(--heading); font-weight: 300; letter-spacing: 0.35em; font-size: 15px; margin-bottom: 9px; }
+footer .f-legal { font-size: 10px; color: var(--concrete-dim); }
+
+@media (max-width: 980px) {
+  .map-layout { grid-template-columns: 1fr; }
+  #map { height: 440px; }
+  .panel { max-height: none; }
+  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: 1fr; }
+  header nav a { margin-left: 12px; font-size: 9px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">SOLA <span>ROOF</span></div>
+  <nav>
+    <a href="index.html">Showcase</a>
+    <a href="dashboard.html">Estimator</a>
+    <a href="salesmap.html" class="active">Sales Map</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="overline">AI Sales Intelligence · Kota Kinabalu</div>
+    <h1>AI Roofing <em>Sales Potential Map</em></h1>
+    <p>Six districts scored by AI across building age &amp; density, roof condition, industrial activity, rainfall impact, renovation demand, property market data and historical sales. Tap a zone to see its profile, recommended pitch and a one-click pre-configured estimate.</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi hot"><div class="num">92<span>%</span></div><div class="lab">AI Confidence Level</div></div>
+    <div class="kpi"><div class="num">6</div><div class="lab">Priority Zones Mapped</div></div>
+    <div class="kpi"><div class="num">42<span>%</span></div><div class="lab">Top-2 Combined Potential</div></div>
+    <div class="kpi"><div class="num">7</div><div class="lab">AI Analysis Factors</div></div>
+  </div>
+
+  <div class="map-layout">
+    <div id="map"></div>
+    <aside class="panel" id="zone-panel"><!-- filled by JS --></aside>
+  </div>
+
+  <div class="section-head">
+    <div class="overline">Playbook</div>
+  </div>
+  <div class="grid-3">
+    <div class="card">
+      <h3>Recommended <em>sales strategy</em></h3>
+      <div class="step"><div class="n">1</div><p><b>Start with Luyang &amp; Kolombong</b> — highest potential, 42% combined. Renovation homeowners + industrial belt.</p></div>
+      <div class="step"><div class="n">2</div><p><b>Focus on industrial B2B</b> for high-value projects — factory inspection offers open bulk-maintenance contracts.</p></div>
+      <div class="step"><div class="n">3</div><p><b>Expand to commercial &amp; residential</b> — shoplot waterproofing and coastal premium homes as the pipeline matures.</p></div>
+    </div>
+    <div class="card">
+      <h3>AI analysis <em>factors</em></h3>
+      <div class="factor">Building age &amp; density</div>
+      <div class="factor">Roof condition indicators</div>
+      <div class="factor">Industrial &amp; commercial activity</div>
+      <div class="factor">Rainfall &amp; weather impact</div>
+      <div class="factor">Renovation demand</div>
+      <div class="factor">Property market data</div>
+      <div class="factor">Historical sales performance</div>
+    </div>
+    <div class="card">
+      <h3>Model <em>confidence</em></h3>
+      <div class="conf-num">92%</div>
+      <div class="conf-bar"><div class="conf-fill"></div></div>
+      <p style="font-size:12px; font-weight:300; color:var(--warm-white-dim); line-height:1.65; margin-top:8px;">
+        Based on satellite imagery, property data, weather patterns and market intelligence.
+        Field verification recommended before commitment.</p>
+      <div class="p-lab" style="margin-top:16px;">Next actions</div>
+      <div class="factor">AI-powered lead generation</div>
+      <div class="factor">Targeted marketing campaigns</div>
+      <div class="factor">Site inspection &amp; proposals</div>
+      <div class="factor">Close &amp; build long-term clients</div>
+    </div>
+  </div>
+
+  <p class="info-note">
+    Zone boundaries are indicative for sales planning — not cadastral. Percentages are AI-derived share of total sales potential.
+    <a href="assets/sales-potential-map.webp" target="_blank">View the original AI analysis infographic →</a>
+  </p>
+</div>
+
+<footer>
+  <div class="f-brand">SOLA ROOF</div>
+  <div class="f-legal">Kota Kinabalu, Sabah · AI sales-potential analysis is a planning aid; field verification recommended.</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ================= Zone data (from the AI sales potential analysis) ================= */
+const ZONES = [
+  {
+    rank: 1, pct: 22, stars: 4.5, color: '#f5820b',
+    name: 'Luyang / Foh Sang / Damai / Lintas',
+    profile: 'Older landed homes, high-value homeowners, strong renovation potential.',
+    approach: 'Old house roof upgrade, heat insulation, premium makeover.',
+    products: ['Stone Coated Tile', 'PU Insulated Panel', 'Foil Insulation', 'Waterproofing'],
+    talk: [
+      'Roofs here are 20–30 years old — heat and small leaks are daily pains.',
+      'Lead with the 5/5 heat-score PU panel: cooler home, quieter rain.',
+      'Premium makeover angle: stone-coated tile lifts resale value.'
+    ],
+    est: 'dashboard.html?building=bungalow&system=ST-ROOF&area=160&insul=1&wp=1',
+    poly: [[5.966,116.082],[5.972,116.096],[5.964,116.108],[5.950,116.110],[5.941,116.100],[5.945,116.086],[5.956,116.079]]
+  },
+  {
+    rank: 2, pct: 20, stars: 4, color: '#3b82c4',
+    name: 'Inanam / Kolombong / Menggatal Industrial Belt',
+    profile: 'Warehouses, factories, workshops — large roof areas.',
+    approach: 'Factory roof inspection, insulated roofing, bulk maintenance.',
+    products: ['PU Insulated Panel', 'Clip Lock System', 'Steel Truss', 'Solar 20 kWp+'],
+    talk: [
+      'Free roof-condition inspection is the door-opener for B2B.',
+      'PU panels cut factory cooling costs — pitch the AC-savings story.',
+      'Big roofs = big solar: 20 kWp+ with strong payback for daytime loads.'
+    ],
+    est: 'dashboard.html?building=factory&system=PU-50&area=1500&solar=20',
+    poly: [[5.985,116.115],[6.010,116.118],[6.028,116.132],[6.022,116.152],[6.000,116.158],[5.978,116.148],[5.972,116.128]]
+  },
+  {
+    rank: 3, pct: 15, stars: 4, color: '#2ca8a8',
+    name: 'KKIP / Sepanggar',
+    profile: 'Large industrial roofs, logistics and factory clients.',
+    approach: 'Industrial roof solutions, large-scale projects.',
+    products: ['PU Insulated Panel', 'Clip Lock System', 'Solar 20 kWp+', 'Gutter Package'],
+    talk: [
+      'KKIP tenants budget for maintenance — sell multi-year contracts.',
+      'Spec-driven buyers: bring engineering drawings and thermal reports.',
+      'Position solar carports for staff parking as a second phase.'
+    ],
+    est: 'dashboard.html?building=factory&system=PU-50&area=3000&solar=20&carport=60',
+    poly: [[6.030,116.108],[6.055,116.102],[6.078,116.115],[6.075,116.140],[6.052,116.152],[6.032,116.140],[6.026,116.122]]
+  },
+  {
+    rank: 4, pct: 16, stars: 3.5, color: '#8458b3',
+    name: 'Gaya Street / Segama / Sinsuran / Bandaran Berjaya / Api-Api',
+    profile: 'Old commercial shoplots and city-centre buildings.',
+    approach: 'Shoplot leak repair, waterproofing, awning & gutter.',
+    products: ['Waterproofing Package', 'Clip Lock System', 'Canopy / Awning', 'Gutter Set'],
+    talk: [
+      'Heritage shoplots leak at flat-roof joints — lead with repair packages.',
+      'Awning + canopy adds sheltered frontage for F&B tenants.',
+      'Low-slope clip lock solves chronic screw-point leakage.'
+    ],
+    est: 'dashboard.html?building=shoplot&system=CL-680&area=220&wp=1&carport=25',
+    poly: [[5.995,116.068],[6.000,116.078],[5.993,116.087],[5.981,116.086],[5.975,116.076],[5.981,116.067]]
+  },
+  {
+    rank: 5, pct: 13, stars: 3, color: '#77b255',
+    name: 'Tanjung Aru / Sembulan / Sutera / Likas Bay Coastal Line',
+    profile: 'Coastal humidity, salt-air exposure, premium homes & commercial.',
+    approach: 'Coastal anti-corrosion, premium roof, solar canopy.',
+    products: ['Stone Coated Tile', 'Anti-corrosion Spec', 'Solar 6 kWp', 'Solar Carport'],
+    talk: [
+      'Salt air kills standard roofing — sell corrosion-resistant specs.',
+      'Premium owners buy aesthetics: stone-coated tile + solar carport.',
+      'Resorts and seafront F&B need canopy shade that survives the coast.'
+    ],
+    est: 'dashboard.html?building=resort&system=ST-ROOF&area=250&solar=6&carport=40',
+    poly: [[6.005,116.088],[5.998,116.075],[5.978,116.062],[5.958,116.050],[5.938,116.046],[5.930,116.058],[5.948,116.070],[5.972,116.082],[5.995,116.098]]
+  },
+  {
+    rank: 6, pct: 14, stars: 3.5, color: '#d4a017',
+    name: 'Penampang / Donggongon / Kepayan / Bundusan / Putatan',
+    profile: 'Suburban landed-house and renovation market.',
+    approach: 'Home renovation roof packages, extensions.',
+    products: ['Longrun Metal 750', 'Steel Truss', 'Foil Insulation', 'Solar 4 kWp'],
+    talk: [
+      'Growing families extend houses — roof the extension, upsell insulation.',
+      'Budget-conscious: longrun metal + foil beats full premium systems.',
+      'Entry solar (4 kWp) as the affordable future-ready add-on.'
+    ],
+    est: 'dashboard.html?building=terrace&system=MR-750&area=140&insul=1&solar=4',
+    poly: [[5.938,116.058],[5.942,116.078],[5.932,116.098],[5.912,116.108],[5.892,116.098],[5.888,116.076],[5.905,116.058],[5.925,116.052]]
+  }
+];
+
+/* ================= Map ================= */
+const map = L.map('map', { scrollWheelZoom: true, zoomControl: true })
+  .setView([5.975, 116.10], 12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 18
+}).addTo(map);
+
+const layers = {};
+ZONES.forEach(z => {
+  const layer = L.polygon(z.poly, {
+    color: z.color, weight: 2, fillColor: z.color, fillOpacity: 0.28
+  }).addTo(map);
+  layer.on('click', () => selectZone(z.rank));
+  layer.on('mouseover', () => layer.setStyle({ fillOpacity: 0.45, weight: 3 }));
+  layer.on('mouseout', () => layer.setStyle({ fillOpacity: layers[z.rank].selected ? 0.5 : 0.28, weight: layers[z.rank].selected ? 3 : 2 }));
+
+  const center = layer.getBounds().getCenter();
+  const icon = L.divIcon({
+    className: 'zone-label',
+    iconSize: [54, 54], iconAnchor: [27, 27],
+    html: `<div class="pct-badge" style="background:${z.color};">${z.pct}%<small>RANK ${z.rank}</small></div>`
+  });
+  L.marker(center, { icon }).addTo(map).on('click', () => selectZone(z.rank));
+  layers[z.rank] = { layer, selected: false };
+});
+
+/* ================= Side panel ================= */
+const starStr = s => '★'.repeat(Math.floor(s)) + (s % 1 ? '½' : '') + '☆'.repeat(5 - Math.ceil(s));
+function selectZone(rank) {
+  const z = ZONES.find(x => x.rank === rank);
+  Object.entries(layers).forEach(([r, o]) => {
+    o.selected = +r === rank;
+    o.layer.setStyle({ fillOpacity: o.selected ? 0.5 : 0.22, weight: o.selected ? 3 : 2 });
+  });
+  map.flyToBounds(layers[rank].layer.getBounds(), { padding: [40, 40], duration: 0.7 });
+  document.getElementById('zone-panel').innerHTML = `
+    <div class="rank-row">
+      <div class="rank-badge" style="background:${z.color};">${z.rank}</div>
+      <h2>${z.name}</h2>
+    </div>
+    <div class="pct-line"><span class="pct">${z.pct}%</span><span class="stars">${starStr(z.stars)}</span></div>
+    <div style="font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--concrete-dim);">of total sales potential</div>
+    <div class="p-lab">Zone profile</div>
+    <div class="profile">${z.profile}</div>
+    <div class="p-lab">Best approach</div>
+    <div class="approach">${z.approach}</div>
+    <div class="p-lab">Recommended products</div>
+    <div class="chip-row">${z.products.map(p => `<span class="chip">${p}</span>`).join('')}</div>
+    <div class="p-lab">Talking points</div>
+    <ul class="talk-list">${z.talk.map(t => `<li>${t}</li>`).join('')}</ul>
+    <div class="btns">
+      <a class="btn btn-primary" href="${z.est}">Open Pre-Configured Estimate →</a>
+      <a class="btn btn-ghost" href="https://wa.me/60123456789?text=${encodeURIComponent('Sales lead — zone: ' + z.name + ' (' + z.pct + '% potential). Approach: ' + z.approach)}" target="_blank" rel="noopener">Log Lead via WhatsApp</a>
+    </div>`;
+}
+selectZone(1);
+</script>
+</body>
+</html>

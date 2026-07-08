@@ -199,6 +199,7 @@ footer .f-legal { font-size: 10px; color: var(--concrete-dim); }
   <div class="brand">SOLA <span>ROOF</span></div>
   <nav>
     <a href="index.html">← Showcase</a>
+    <a href="salesmap.html">Sales Map</a>
     <a href="#catalog">Catalog</a>
     <a href="#lead">Enquire</a>
   </nav>
@@ -536,6 +537,22 @@ document.getElementById('catalog-grid').innerHTML = Object.entries(PRODUCTS).map
   document.getElementById(id).addEventListener('input', calc));
 ['opt-truss','opt-insul','opt-gutter','opt-wp','opt-battery'].forEach(id =>
   document.getElementById(id).addEventListener('change', calc));
+
+/* preset from URL params (used by the AI sales map zone links) */
+(function applyPreset() {
+  const q = new URLSearchParams(location.search);
+  const setSel = (id, v) => { const el = document.getElementById(id);
+    if (v !== null && [...el.options].some(o => o.value === v)) el.value = v; };
+  setSel('building', q.get('building'));
+  setSel('system', q.get('system'));
+  setSel('solar', q.get('solar'));
+  if (q.get('area')) document.getElementById('area').value = q.get('area');
+  if (q.get('carport')) document.getElementById('carport').value = q.get('carport');
+  const flags = { truss: 'opt-truss', insul: 'opt-insul', gutter: 'opt-gutter', wp: 'opt-wp', battery: 'opt-battery' };
+  Object.entries(flags).forEach(([k, id]) => {
+    if (q.has(k)) document.getElementById(id).checked = q.get(k) === '1';
+  });
+})();
 
 calc();
 </script>

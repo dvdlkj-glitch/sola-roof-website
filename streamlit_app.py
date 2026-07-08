@@ -33,6 +33,8 @@ st.markdown(
       <a href="{SITE_URL}" target="_blank" style="color:#f5a13d;">open the animated site</a>
       &nbsp;·&nbsp;
       <a href="{DASHBOARD_URL}" target="_blank" style="color:#f5a13d;">open the cost estimator dashboard</a>
+      &nbsp;·&nbsp;
+      <a href="{PAGES_BASE}/salesmap.html" target="_blank" style="color:#f5a13d;">open the AI sales potential map</a>
     </div>
     """,
     unsafe_allow_html=True,
